@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주 오늘 — 오늘의 사주팔자</title>
+<meta name="description" content="이름과 생년월일시를 입력하면 정확한 만세력 계산으로 사주팔자와 오늘의 운세를 알려드립니다.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="wrap">
+    <span class="brand">사주 오늘</span>
+    <span class="brand-sub">四柱 오늘</span>
+  </div>
+</header>
+
+<main>
+  <section class="intro">
+    <div class="wrap">
+      <h1>당신의 사주팔자,<br>정확한 만세력으로 봅니다.</h1>
+      <p class="lede">태어난 순간의 천간과 지지를 절기 기준으로 계산해 오늘의 기운까지 풀어드립니다.</p>
+    </div>
+  </section>
+
+  <section class="form-section" id="form-section">
+    <div class="wrap">
+      <form id="saju-form" novalidate>
+        <div class="field">
+          <label for="name">이름 (영문)</label>
+          <input type="text" id="name" name="name" placeholder="Kwonwoo Lee" autocomplete="name" pattern="[A-Za-z][A-Za-z .&#39;\-]{0,58}" maxlength="60" required>
+          <p class="hint" id="name-hint">알파벳으로 입력해주세요. 사주 계산에는 쓰이지 않고 결과 표시에만 사용돼요.</p>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="birth-date">생년월일 (양력)</label>
+            <input type="date" id="birth-date" name="birth-date" required min="1900-01-01" max="2026-12-31">
+          </div>
+
+          <div class="field">
+            <label for="gender">성별</label>
+            <select id="gender" name="gender" required>
+              <option value="" disabled selected>선택</option>
+              <option value="male">남성</option>
+              <option value="female">여성</option>
+            </select>
+            <p class="hint">대운(大運)의 순행/역행 방향 계산에 사용돼요.</p>
+          </div>
+        </div>
+
+        <div class="field time-field">
+          <div class="time-toggle-row">
+            <label for="birth-time">태어난 시각</label>
+            <label class="switch">
+              <input type="checkbox" id="time-unknown">
+              <span>시간 모름</span>
+            </label>
+          </div>
+          <input type="time" id="birth-time" name="birth-time">
+          <p class="hint" id="time-hint">시주(時柱)까지 정확히 보려면 태어난 시각이 필요해요. 모르면 년주·월주·일주 세 기둥만 보여드려요.</p>
+        </div>
+
+        <div class="field">
+          <label for="region">태어난 지역</label>
+          <select id="region" name="region" required>
+            <option value="" disabled selected>선택</option>
+          </select>
+          <p class="hint" id="region-hint">경도차를 반영한 진태양시(眞太陽時) 보정에 사용돼요.</p>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <span>내 사주 보기</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <section class="results" id="results" hidden>
+    <div class="wrap">
+
+      <div class="result-block" id="block-pillars">
+        <h2 class="result-title" id="pillars-title">사주팔자</h2>
+        <p class="correction-note" id="correction-note"></p>
+
+        <div class="pillars" id="pillars"></div>
+      </div>
+
+      <div class="result-block" id="block-wuxing">
+        <h2 class="result-title">오행 균형</h2>
+        <div class="wuxing-chart" id="wuxing-chart"></div>
+      </div>
+
+      <div class="result-block" id="block-today">
+        <h2 class="result-title">오늘의 운세</h2>
+        <p class="today-date" id="today-date"></p>
+
+        <div class="today-ganji" id="today-ganji"></div>
+
+        <div class="fortune-summary">
+          <p id="fortune-headline"></p>
+          <p id="fortune-body"></p>
+        </div>
+
+        <div class="fortune-grid" id="fortune-grid"></div>
+
+        <div class="lucky-row" id="lucky-row"></div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>사주 오늘은 전통 명리학(命理學)의 만세력 계산 방식을 따르되, 해석은 참고용 안내이며 삶의 결정을 대신하지 않습니다.</p>
+  </div>
+</footer>
+
+<script src="vendor/lunar.js"></script>
+<script src="regions.js"></script>
+<script src="saju-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

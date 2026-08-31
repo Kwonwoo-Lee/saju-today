@@ -1,0 +1,15 @@
+{
+  "name": "saju-today",
+  "version": "1.0.0",
+  "description": "이름/생년월일시/지역/성별로 정확한 사주팔자와 오늘의 운세를 보여주는 정적 사이트",
+  "private": true,
+  "scripts": {
+    "test": "node test/smoke.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lunar-javascript": "^1.7.7"
+  }
+}

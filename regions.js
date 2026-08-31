@@ -1,0 +1,25 @@
+// 주요 지역의 경도(동경) 데이터. 진태양시 보정(경도차)에 사용.
+// 기준: KST 표준 자오선 135°E. 보정(분) = (경도 - 135) * 4
+const REGIONS = [
+  { id: "seoul", name: "서울", lng: 126.98 },
+  { id: "incheon", name: "인천", lng: 126.70 },
+  { id: "suwon", name: "수원", lng: 127.01 },
+  { id: "sejong", name: "세종", lng: 127.29 },
+  { id: "chuncheon", name: "춘천", lng: 127.73 },
+  { id: "gangneung", name: "강릉", lng: 128.90 },
+  { id: "cheongju", name: "청주", lng: 127.49 },
+  { id: "daejeon", name: "대전", lng: 127.38 },
+  { id: "jeonju", name: "전주", lng: 127.15 },
+  { id: "gwangju", name: "광주", lng: 126.85 },
+  { id: "mokpo", name: "목포", lng: 126.39 },
+  { id: "yeosu", name: "여수", lng: 127.66 },
+  { id: "daegu", name: "대구", lng: 128.60 },
+  { id: "pohang", name: "포항", lng: 129.37 },
+  { id: "changwon", name: "창원", lng: 128.68 },
+  { id: "jinju", name: "진주", lng: 128.09 },
+  { id: "busan", name: "부산", lng: 129.08 },
+  { id: "ulsan", name: "울산", lng: 129.31 },
+  { id: "jeju", name: "제주", lng: 126.53 },
+  { id: "seogwipo", name: "서귀포", lng: 126.56 },
+  { id: "overseas", name: "해외 / 기타 (보정 없음)", lng: 135.0 },
+];
