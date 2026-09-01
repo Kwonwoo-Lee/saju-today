@@ -280,6 +280,8 @@ function todayGlyphText(lang, fortune) {
 function pillarNode(lang, label, p) {
   const el = document.createElement("div");
   el.className = "pillar";
+  const stemEl = STEM_ELEMENT[stemIndex(p.stem)];
+  el.style.setProperty("--pillar-glow", `var(--el-${stemEl})`);
   const script = glyphScript(lang);
   const [stemGlyph, branchGlyph] = pillarGlyphs(lang, p);
   el.innerHTML = `
@@ -292,6 +294,82 @@ function pillarNode(lang, label, p) {
   `;
   return el;
 }
+
+// ---------- 오행 레이더 차트 (SVG) ----------
+// 축 순서는 상생(相生) 순환(목→화→토→금→수)을 그대로 따르고, 히어로의 아스트롤라베
+// 장식과 같은 각도를 써서 시각적으로 짝을 이루게 한다.
+const SVGNS = "http://www.w3.org/2000/svg";
+const WUXING_AXES = ELEMENT_ORDER.map((key, i) => ({ key, angleDeg: -90 + i * 72 }));
+const WUXING_CENTER = 150, WUXING_MAX_R = 118, WUXING_MIN_R = 16;
+
+function polarPoint(angleDeg, r) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return [WUXING_CENTER + r * Math.cos(rad), WUXING_CENTER + r * Math.sin(rad)];
+}
+function svgEl(tag, attrs) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+
+function buildWuxingChart(lang, wuxing) {
+  const maxCount = Math.max(1, ...Object.values(wuxing));
+  const svg = svgEl("svg", { viewBox: "0 0 300 300", class: "wuxing-svg", role: "img" });
+  svg.setAttribute("aria-label", ELEMENT_ORDER.map((el) => `${ELEMENT_NAMES[lang][el]} ${wuxing[el]}`).join(", "));
+
+  [0.34, 0.67, 1].forEach((f) => {
+    svg.appendChild(svgEl("circle", { cx: WUXING_CENTER, cy: WUXING_CENTER, r: WUXING_MIN_R + (WUXING_MAX_R - WUXING_MIN_R) * f, class: "wuxing-web" }));
+  });
+
+  WUXING_AXES.forEach(({ angleDeg }) => {
+    const [x, y] = polarPoint(angleDeg, WUXING_MAX_R);
+    svg.appendChild(svgEl("line", { x1: WUXING_CENTER, y1: WUXING_CENTER, x2: x, y2: y, class: "wuxing-axis" }));
+  });
+
+  const points = WUXING_AXES.map(({ key, angleDeg }) => {
+    const r = WUXING_MIN_R + (WUXING_MAX_R - WUXING_MIN_R) * (wuxing[key] / maxCount);
+    return polarPoint(angleDeg, r);
+  });
+  svg.appendChild(svgEl("polygon", { points: points.map((p) => p.join(",")).join(" "), class: "wuxing-shape" }));
+
+  WUXING_AXES.forEach(({ key }, i) => {
+    const [x, y] = points[i];
+    svg.appendChild(svgEl("circle", { cx: x, cy: y, r: 5.5, class: "wuxing-point", "data-element": key }));
+  });
+
+  return svg;
+}
+
+function buildWuxingLegend(lang, wuxing) {
+  const wrap = document.createElement("div");
+  wrap.className = "wuxing-legend";
+  ELEMENT_ORDER.forEach((el, i) => {
+    const item = document.createElement("span");
+    item.className = "wuxing-legend-item";
+    item.style.setProperty("--stagger", i);
+    item.innerHTML = `<span class="swatch" data-element="${el}" style="background:var(--el-${el})"></span>${ELEMENT_NAMES[lang][el]} <span class="count">${wuxing[el]}</span>`;
+    wrap.appendChild(item);
+  });
+  return wrap;
+}
+
+// ---------- 히어로 장식(아스트롤라베) 눈금 ----------
+function astrolabePoint(angleDeg, r) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return [160 + r * Math.cos(rad), 160 + r * Math.sin(rad)];
+}
+function drawAstrolabeTicks() {
+  const g = document.getElementById("astrolabe-ticks");
+  if (!g || g.childElementCount) return;
+  for (let i = 0; i < 24; i++) {
+    const angle = i * 15;
+    const major = i % 2 === 0;
+    const [x1, y1] = astrolabePoint(angle - 90, 150);
+    const [x2, y2] = astrolabePoint(angle - 90, major ? 137 : 143);
+    g.appendChild(svgEl("line", { x1, y1, x2, y2, class: major ? "astrolabe-tick astrolabe-tick--major" : "astrolabe-tick" }));
+  }
+}
+drawAstrolabeTicks();
 
 function renderResults(lang, result) {
   const { name, saju, fortune, hasTime, regionId } = result;
@@ -313,20 +391,8 @@ function renderResults(lang, result) {
 
   const wuxingEl = document.getElementById("wuxing-chart");
   wuxingEl.innerHTML = "";
-  const total = Object.values(saju.wuxing).reduce((a, b) => a + b, 0) || 1;
-  ELEMENT_ORDER.forEach((el, i) => {
-    const count = saju.wuxing[el];
-    const pct = Math.round((count / total) * 100);
-    const row = document.createElement("div");
-    row.className = "wuxing-row";
-    row.style.setProperty("--stagger", i);
-    row.innerHTML = `
-      <span class="wuxing-label" data-element="${el}">${ELEMENT_NAMES[lang][el]}</span>
-      <div class="wuxing-track"><div class="wuxing-fill" data-element="${el}" style="--pct:${pct}%"></div></div>
-      <span class="wuxing-count">${count}</span>
-    `;
-    wuxingEl.appendChild(row);
-  });
+  wuxingEl.appendChild(buildWuxingChart(lang, saju.wuxing));
+  wuxingEl.appendChild(buildWuxingLegend(lang, saju.wuxing));
 
   const todayStr = new Date().toLocaleDateString(LOCALE_CODE[lang], { year: "numeric", month: "long", day: "numeric", weekday: "long" });
   document.getElementById("today-date").textContent = todayStr;

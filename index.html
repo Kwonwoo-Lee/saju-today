@@ -60,9 +60,29 @@
 
 <main>
   <section class="intro">
-    <div class="wrap">
-      <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2">calculated with real astronomy.</span></h1>
-      <p class="lede" id="hero-lede">We work out the heavenly stems and earthly branches of your birth moment using true solar-term boundaries, then read today's energy against your chart.</p>
+    <div class="wrap intro-grid">
+      <div class="intro-copy">
+        <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2">calculated with real astronomy.</span></h1>
+        <p class="lede" id="hero-lede">We work out the heavenly stems and earthly branches of your birth moment using true solar-term boundaries, then read today's energy against your chart.</p>
+      </div>
+      <div class="intro-emblem" aria-hidden="true">
+        <svg viewBox="0 0 320 320" class="astrolabe">
+          <g class="astrolabe-spin astrolabe-spin--slow">
+            <circle class="astrolabe-ring astrolabe-ring--outer" cx="160" cy="160" r="150"></circle>
+            <g class="astrolabe-ticks" id="astrolabe-ticks"></g>
+          </g>
+          <circle class="astrolabe-ring astrolabe-ring--mid" cx="160" cy="160" r="112"></circle>
+          <g class="astrolabe-spin astrolabe-spin--rev">
+            <circle class="astrolabe-dot" data-element="wood" cx="160" cy="48" r="6"></circle>
+            <circle class="astrolabe-dot" data-element="fire" cx="267" cy="125" r="6"></circle>
+            <circle class="astrolabe-dot" data-element="earth" cx="226" cy="251" r="6"></circle>
+            <circle class="astrolabe-dot" data-element="metal" cx="94" cy="251" r="6"></circle>
+            <circle class="astrolabe-dot" data-element="water" cx="54" cy="125" r="6"></circle>
+          </g>
+          <circle class="astrolabe-ring astrolabe-ring--inner" cx="160" cy="160" r="74"></circle>
+          <circle class="astrolabe-core" cx="160" cy="160" r="28"></circle>
+        </svg>
+      </div>
     </div>
   </section>
 
@@ -130,16 +150,18 @@
   <section class="results" id="results" hidden>
     <div class="wrap">
 
-      <div class="result-block" id="block-pillars">
-        <h2 class="result-title" id="pillars-title"></h2>
-        <p class="correction-note" id="correction-note"></p>
+      <div class="results-top">
+        <div class="result-block" id="block-pillars">
+          <h2 class="result-title" id="pillars-title"></h2>
+          <p class="correction-note" id="correction-note"></p>
 
-        <div class="pillars" id="pillars"></div>
-      </div>
+          <div class="pillars" id="pillars"></div>
+        </div>
 
-      <div class="result-block" id="block-wuxing">
-        <h2 class="result-title" id="wuxing-title">Five-Element Balance</h2>
-        <div class="wuxing-chart" id="wuxing-chart"></div>
+        <div class="result-block" id="block-wuxing">
+          <h2 class="result-title" id="wuxing-title">Five-Element Balance</h2>
+          <div class="wuxing-chart" id="wuxing-chart"></div>
+        </div>
       </div>
 
       <div class="result-block" id="block-today">
