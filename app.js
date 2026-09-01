@@ -217,13 +217,16 @@ function formatCorrectionNote(lang, hasTime, regionLabel, offsetMinutes, correct
 }
 
 function formatTodayGanji(lang, fortune) {
-  const roman = `${STEM_ROMAN[stemIndex(fortune.todayStem)]}-${BRANCH_ROMAN[branchIndex(fortune.todayBranch)]}`;
-  const animal = lang === "ko" ? BRANCH_ANIMALS.ko[fortune.todayAnimalIndex] : BRANCH_ANIMALS[lang][fortune.todayAnimalIndex];
+  const animal = BRANCH_ANIMALS[lang][fortune.todayAnimalIndex];
   const godName = TEN_GOD_NAMES[lang][fortune.tenGodKey];
   if (lang === "ko") return `오늘은 ${fortune.todayStemKo}${fortune.todayBranchKo}일 (${animal}띠 기운) · 나와의 관계는 <strong>${godName}</strong>`;
-  if (lang === "zh") return `今天是${roman}日（${animal}能量）· 与你的关系：<strong>${godName}</strong>`;
-  if (lang === "fr") return `Aujourd'hui est un jour ${roman} (énergie ${animal}) · votre relation avec lui : <strong>${godName}</strong>`;
-  return `Today is a ${roman} day (${animal} energy) · your relationship with it: <strong>${godName}</strong>`;
+  if (lang === "zh") {
+    const roman = `${STEM_ROMAN[stemIndex(fortune.todayStem)]}-${BRANCH_ROMAN[branchIndex(fortune.todayBranch)]}`;
+    return `今天是${roman}日（${animal}能量）· 与你的关系：<strong>${godName}</strong>`;
+  }
+  const meaning = stemMeaning(lang, fortune.todayStem);
+  if (lang === "fr") return `Aujourd'hui est un jour ${animal} (${meaning}) · votre relation avec lui : <strong>${godName}</strong>`;
+  return `Today is a ${meaning} ${animal} day · your relationship with it: <strong>${godName}</strong>`;
 }
 
 function formatFortuneBody(lang, name, element, godName) {
@@ -247,8 +250,15 @@ function formatLuckyRow(lang, colorName, numbers) {
 }
 
 // ---------- 표시 문자(글리프) ----------
-// 중국어는 실제 한자를, 그 외 언어는 병음 로마자(en/fr) 또는 한글 갑자(ko)를 큰 글자로 보여준다.
-// 한자는 중국어 화면에서만 등장한다.
+// 중국어는 실제 한자를, 한국어는 한글 갑자를 보여준다. 영어/프랑스어는 병음(중국어 발음)을
+// 쓰지 않고, 그 나라 말로 뜻이 통하는 음양+오행(천간) / 띠 동물(지지)로 바꿔서 보여준다.
+const YIN_YANG = { en: { yang: "Yang", yin: "Yin" }, fr: { yang: "Yang", yin: "Yin" } };
+function stemMeaning(lang, stemHanja) {
+  const idx = stemIndex(stemHanja);
+  const yy = YIN_YANG[lang][isYangIndex(idx) ? "yang" : "yin"];
+  const el = ELEMENT_NAMES[lang][STEM_ELEMENT[idx]];
+  return lang === "fr" ? `${el} ${yy}` : `${yy} ${el}`;
+}
 function glyphScript(lang) {
   if (lang === "zh") return "cjk";
   if (lang === "ko") return "hangul";
@@ -257,12 +267,13 @@ function glyphScript(lang) {
 function pillarGlyphs(lang, p) {
   if (lang === "zh") return [p.stem, p.branch];
   if (lang === "ko") return [p.stemKo, p.branchKo];
-  return [STEM_ROMAN[stemIndex(p.stem)], BRANCH_ROMAN[branchIndex(p.branch)]];
+  return [stemMeaning(lang, p.stem), BRANCH_ANIMALS[lang][p.animalIndex]];
 }
 function todayGlyphText(lang, fortune) {
   if (lang === "zh") return fortune.todayStem + fortune.todayBranch;
   if (lang === "ko") return fortune.todayStemKo + fortune.todayBranchKo;
-  return `${STEM_ROMAN[stemIndex(fortune.todayStem)]}-${BRANCH_ROMAN[branchIndex(fortune.todayBranch)]}`;
+  const animal = BRANCH_ANIMALS[lang][fortune.todayAnimalIndex];
+  return `${stemMeaning(lang, fortune.todayStem)} · ${animal}`;
 }
 
 // ---------- 렌더링 ----------
