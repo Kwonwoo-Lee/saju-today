@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://saju.tradesmrt.com/sitemap.xml

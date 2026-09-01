@@ -23,6 +23,10 @@ function applyStaticStrings(lang) {
   document.documentElement.lang = lang;
   document.getElementById("page-title").textContent = s.pageTitle;
   document.getElementById("meta-description").setAttribute("content", s.metaDescription);
+  document.getElementById("og-title").setAttribute("content", s.pageTitle);
+  document.getElementById("og-description").setAttribute("content", s.metaDescription);
+  document.getElementById("twitter-title").setAttribute("content", s.pageTitle);
+  document.getElementById("twitter-description").setAttribute("content", s.metaDescription);
   document.getElementById("brand-name").textContent = s.brand;
   document.getElementById("brand-sub").textContent = s.brandSub;
   document.getElementById("hero-title-1").textContent = s.heroTitleLine1;
