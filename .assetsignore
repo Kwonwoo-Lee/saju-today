@@ -1,0 +1,9 @@
+wrangler.toml
+package.json
+package-lock.json
+README.md
+.gitignore
+.gitattributes
+.assetsignore
+test/
+node_modules/
