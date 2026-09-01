@@ -22,7 +22,7 @@
   --radius-md: 16px;
   --radius-pill: 999px;
   --font-ui: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
-  --font-hanja: "Noto Serif KR", serif;
+  --font-hanja: "Noto Serif SC", "Noto Serif KR", serif;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -46,6 +46,8 @@
     --el-water: #7ba8d1;
   }
 }
+
+:root:lang(ko) { --font-hanja: "Noto Serif KR", serif; }
 
 * { box-sizing: border-box; }
 
@@ -99,6 +101,22 @@ img { max-width: 100%; }
   font-family: var(--font-hanja);
   color: var(--text-muted);
   font-size: 0.85rem;
+}
+.lang-switch {
+  margin-left: auto;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.lang-switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 /* ---------- intro ---------- */
@@ -184,6 +202,11 @@ input::placeholder { color: var(--text-muted); opacity: 0.8; }
   cursor: pointer;
 }
 .switch input { accent-color: var(--accent); }
+.dst-switch {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+}
 
 .submit-btn {
   margin-top: 6px;

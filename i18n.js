@@ -1,0 +1,412 @@
+// i18n.js — 다국어 사전. 기본 언어는 영어(북미 타깃), 중국어/프랑스어/한국어 지원.
+"use strict";
+
+const DEFAULT_LANG = "en";
+const SUPPORTED_LANGS = ["en", "zh", "fr", "ko"];
+
+const LOCALE_CODE = { en: "en-US", zh: "zh-CN", fr: "fr-FR", ko: "ko-KR" };
+
+// 천간/지지 로마자 표기(병음). 영어·프랑스어·중국어 공통으로 사용.
+const STEM_ROMAN = ["Jiǎ", "Yǐ", "Bǐng", "Dīng", "Wù", "Jǐ", "Gēng", "Xīn", "Rén", "Guǐ"];
+const BRANCH_ROMAN = ["Zǐ", "Chǒu", "Yín", "Mǎo", "Chén", "Sì", "Wǔ", "Wèi", "Shēn", "Yǒu", "Xū", "Hài"];
+
+const BRANCH_ANIMALS = {
+  en: ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"],
+  zh: ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"],
+  fr: ["Rat", "Buffle", "Tigre", "Lapin", "Dragon", "Serpent", "Cheval", "Chèvre", "Singe", "Coq", "Chien", "Cochon"],
+  ko: ["쥐", "소", "호랑이", "토끼", "용", "뱀", "말", "양", "원숭이", "닭", "개", "돼지"],
+};
+
+const ELEMENT_NAMES = {
+  en: { wood: "Wood", fire: "Fire", earth: "Earth", metal: "Metal", water: "Water" },
+  zh: { wood: "木", fire: "火", earth: "土", metal: "金", water: "水" },
+  fr: { wood: "Bois", fire: "Feu", earth: "Terre", metal: "Métal", water: "Eau" },
+  ko: { wood: "목", fire: "화", earth: "토", metal: "금", water: "수" },
+};
+
+const LUCKY_COLOR_NAMES = {
+  en: { wood: "Green", fire: "Red / Orange", earth: "Yellow / Ochre", metal: "White / Silver", water: "Black / Navy" },
+  zh: { wood: "绿色", fire: "红色 / 橙色", earth: "黄色 / 土色", metal: "白色 / 银色", water: "黑色 / 藏青色" },
+  fr: { wood: "Vert", fire: "Rouge / Orange", earth: "Jaune / Ocre", metal: "Blanc / Argent", water: "Noir / Bleu marine" },
+  ko: { wood: "초록/청록", fire: "빨강/주황", earth: "황토/노랑", metal: "흰색/은색", water: "검정/남색" },
+};
+
+// 십성(十神) 이름. 내부 코드(key)는 언어 중립.
+const TEN_GOD_NAMES = {
+  en: {
+    biJian: "Friend", jieCai: "Rob Wealth", shiShen: "Eating God", shangGuan: "Hurting Officer",
+    pianCai: "Indirect Wealth", zhengCai: "Direct Wealth", qiSha: "Seven Killings", zhengGuan: "Direct Officer",
+    pianYin: "Indirect Resource", zhengYin: "Direct Resource",
+  },
+  zh: {
+    biJian: "比肩", jieCai: "劫财", shiShen: "食神", shangGuan: "伤官",
+    pianCai: "偏财", zhengCai: "正财", qiSha: "七杀", zhengGuan: "正官",
+    pianYin: "偏印", zhengYin: "正印",
+  },
+  fr: {
+    biJian: "Ami", jieCai: "Rivalité de richesse", shiShen: "Dieu de la nourriture", shangGuan: "Officier blessé",
+    pianCai: "Richesse indirecte", zhengCai: "Richesse directe", qiSha: "Les sept tueurs", zhengGuan: "Officier direct",
+    pianYin: "Ressource indirecte", zhengYin: "Ressource directe",
+  },
+  ko: {
+    biJian: "비견", jieCai: "겁재", shiShen: "식신", shangGuan: "상관",
+    pianCai: "편재", zhengCai: "정재", qiSha: "편관", zhengGuan: "정관",
+    pianYin: "편인", zhengYin: "정인",
+  },
+};
+
+// 십성별 오늘의 운세 해석 (총운/재물운/애정운/건강운)
+const TEN_GOD_INFO = {
+  en: {
+    biJian: {
+      overall: "You'd rather trust your own judgment today than lean on anyone else's. Independent decisions land better than group ones.",
+      wealth: "Money earned and spent by your own hand flows more smoothly than shared ventures. Hold off on partnerships or joint investments.",
+      love: "Time alone feels comfortable. Speaking your mind plainly helps the relationship more than accommodating.",
+      health: "Stamina is steady, but stubbornness can push you past your limits. Listen to what your body is telling you.",
+    },
+    jieCai: {
+      overall: "Competitive instincts run high. Drive is strong, but pace yourself so you don't clash with people around you.",
+      wealth: "Money tends to leave your hands today. Be careful with loans to friends, cosigning, or impulsive investments.",
+      love: "Jealousy or comparison can creep in. Hearing someone out fully goes a long way toward avoiding conflict.",
+      health: "Tension and nerves run close to the surface. A short stretch beats another cup of coffee.",
+    },
+    shiShen: {
+      overall: "Body and mind both loosen up today. Expressing yourself and sharing with others comes easily.",
+      wealth: "Steady effort pays off. Keep an eye out for side income built on a hobby or a real skill.",
+      love: "A warm word softens things fast. Sharing a meal together works especially well.",
+      health: "Good day to pay attention to digestion. Regular mealtimes help.",
+    },
+    shangGuan: {
+      overall: "Your thinking runs fast and your words come out sharp. Good ideas, but give what you say one more pass before it leaves your mouth.",
+      wealth: "Opportunities built on talent or content look promising. Watch for impulse spending, though.",
+      love: "Bluntness can be misread as criticism. Say the true thing gently and it lands better.",
+      health: "Headaches or a wired feeling can build up. Trade long pushes for frequent short breaks.",
+    },
+    pianCai: {
+      overall: "Opportunities arrive from more than one direction today. With more options on the table, focus matters more than usual.",
+      wealth: "An unexpected offer or windfall is plausible. Hold the optimism until it's actually confirmed.",
+      love: "A new connection or an exciting invitation is likely. Think twice before locking in a spontaneous plan.",
+      health: "Activity levels swing, and energy swings with them. Protect your sleep window no matter what.",
+    },
+    zhengCai: {
+      overall: "What you've built steadily gets recognized today. Stability and trust are the theme.",
+      wealth: "Planned spending and saving line up well. Better day for organizing than for big new commitments.",
+      love: "Old relationships feel warmer than usual. Keeping a small promise builds real trust.",
+      health: "Mostly steady. Worth checking any recurring posture issue or nagging ache while you're at it.",
+    },
+    qiSha: {
+      overall: "Responsibility and pressure both arrive at once. It's uncomfortable, but it's also what pushes things forward.",
+      wealth: "A firm hand on spending is called for. Keep a cushion ready for a sudden expense.",
+      love: "Tension can sharpen a connection, but it wears thin if it drags on. Talk it out sooner rather than later.",
+      health: "Stress tends to show up in the body. Loosen your shoulders and neck through the day.",
+    },
+    zhengGuan: {
+      overall: "Following the rules is what earns recognition today. Process and structure are the shortcut, not the obstacle.",
+      wealth: "Financial management within clear rules works in your favor. Good day for taxes, contracts, paperwork.",
+      love: "A sense of responsibility builds trust. A good day for a serious conversation or future plans.",
+      health: "A regular routine protects your condition. Keep sleep on a consistent schedule.",
+    },
+    pianYin: {
+      overall: "Instinct sharpens today. A different approach than everyone else's might be exactly what works.",
+      wealth: "Information or a good idea can turn into money. Don't rush past double-checking, though, or it can cost you.",
+      love: "You may find yourself overthinking alone. Ask directly instead of guessing.",
+      health: "Sleep can turn shallow with a busy mind. Cut screen time before bed.",
+    },
+    zhengYin: {
+      overall: "A good day to learn and recharge. Treat it as preparation rather than pushing to act.",
+      wealth: "Money spent on study, credentials, or credibility pays off more than a quick return would.",
+      love: "Understanding and patience toward the other person grow today. A steady, supportive presence suits you.",
+      health: "Rest is the medicine today. Simply letting your body slow down brings your energy back.",
+    },
+  },
+  zh: {
+    biJian: {
+      overall: "今天更愿意相信自己的判断，而不是依靠别人。独立做决定比听从他人更顺。",
+      wealth: "自己挣自己花的钱流动更顺畅，合伙或共同投资今天先缓一缓。",
+      love: "独处的时光让人感到自在。坦率表达想法比一味迁就更有利于关系。",
+      health: "体力总体稳定，但固执容易让你不知不觉透支。多留意身体发出的信号。",
+    },
+    jieCai: {
+      overall: "好胜心变强的一天。冲劲十足，但要注意节奏，避免和身边人起冲突。",
+      wealth: "今天钱容易流出。借钱给朋友、做担保、冲动投资都要格外小心。",
+      love: "嫉妒或比较的心理可能悄悄冒头。把对方的话听完，能少很多争执。",
+      health: "神经容易紧绷。与其喝咖啡提神，不如做几分钟拉伸。",
+    },
+    shiShen: {
+      overall: "身心都比较放松的一天，表达和分享的事情都进行得很顺利。",
+      wealth: "稳扎稳打会有收获。留意一下靠爱好或专长带来的副业机会。",
+      love: "一句贴心的话就能让关系升温。一起吃顿饭尤其加分。",
+      health: "适合关注一下消化系统。规律的三餐会很有帮助。",
+    },
+    shangGuan: {
+      overall: "思维敏捷、言辞犀利的一天。想法不错，但说出口前最好再斟酌一遍。",
+      wealth: "靠才华或内容变现的机会不错，但要留意冲动消费。",
+      love: "直来直去的话容易被误解。把真话说得温和一点，效果会更好。",
+      health: "容易头痛或精神紧绷，与其硬撑，不如常常短暂休息。",
+    },
+    pianCai: {
+      overall: "机会从多个方向涌来的一天。选择变多，专注力比平时更重要。",
+      wealth: "意外的收入或提议是有可能的，但在确认之前先别太乐观。",
+      love: "容易遇到新的缘分或令人心动的邀约，临时定下的计划最好再想想。",
+      health: "活动量起伏带动状态起伏，无论如何都要保住睡眠时间。",
+    },
+    zhengCai: {
+      overall: "一步一步累积的成果今天会被看见，稳定与信任是关键词。",
+      wealth: "计划好的收支正合拍。适合整理财务，而不是做大的新决定。",
+      love: "越是长久的关系，今天越显温暖。守住一个小承诺，会换来更大的信任。",
+      health: "整体平稳。顺便查一下反复出现的姿势问题或旧伤会有帮助。",
+    },
+    qiSha: {
+      overall: "责任和压力同时袭来的一天。虽然辛苦，却也正是推动事情向前的力量。",
+      wealth: "需要果断控制开支，最好预留一笔应急资金以防突发花费。",
+      love: "紧张感能为关系增添刺激，但拖久了会让人疲惫，最好尽快沟通化解。",
+      health: "压力容易反映在身体上，记得时常放松肩颈。",
+    },
+    zhengGuan: {
+      overall: "按规矩办事今天更容易被认可，规则与流程是捷径而非阻碍。",
+      wealth: "在明确规则内理财对你有利，适合处理税务、合同、文件相关事务。",
+      love: "责任感会增进信任，适合认真的对话或规划未来。",
+      health: "规律的生活作息能保护你的状态，保持固定的睡眠时间。",
+    },
+    pianYin: {
+      overall: "直觉变得敏锐的一天，与众不同的方式可能正好行得通。",
+      wealth: "信息或点子有可能变成钱，但操之过急可能带来损失，别忘了先核实。",
+      love: "容易一个人胡思乱想，与其猜测，不如直接问清楚。",
+      health: "思绪多容易让睡眠变浅，睡前尽量少看屏幕。",
+    },
+    zhengYin: {
+      overall: "适合学习和充电的一天，把它当作准备期，而不是急着行动。",
+      wealth: "花在学习、考证、建立信用上的钱，比追求眼前收益更值得。",
+      love: "对对方的理解与包容心今天会变强，适合扮演稳定支持的角色。",
+      health: "休息就是今天最好的良药，让身体慢下来，状态自然会恢复。",
+    },
+  },
+  fr: {
+    biJian: {
+      overall: "Vous préférez aujourd'hui faire confiance à votre propre jugement plutôt que de compter sur les autres. Les décisions prises seul passent mieux qu'en groupe.",
+      wealth: "L'argent gagné et dépensé de votre propre main circule mieux qu'une aventure partagée. Mieux vaut remettre à plus tard les partenariats ou investissements communs.",
+      love: "Le temps passé seul est agréable. Dire clairement ce que vous pensez aide plus la relation que de simplement s'adapter.",
+      health: "L'énergie est stable, mais l'entêtement peut vous pousser au-delà de vos limites. Écoutez les signaux de votre corps.",
+    },
+    jieCai: {
+      overall: "L'esprit de compétition est vif aujourd'hui. L'élan est fort, mais ménagez votre rythme pour éviter les frictions avec votre entourage.",
+      wealth: "L'argent a tendance à filer aujourd'hui. Méfiez-vous des prêts à des proches, des cautions et des investissements impulsifs.",
+      love: "La jalousie ou la comparaison peuvent s'installer. Écouter l'autre jusqu'au bout évite bien des disputes.",
+      health: "La tension nerveuse est proche de la surface. Un court étirement vaut mieux qu'un café de plus.",
+    },
+    shiShen: {
+      overall: "Le corps et l'esprit se détendent aujourd'hui. S'exprimer et partager se fait naturellement.",
+      wealth: "La constance porte ses fruits. Gardez un œil sur un revenu d'appoint issu d'un talent ou d'un loisir.",
+      love: "Un mot chaleureux adoucit vite les choses. Partager un repas ensemble fonctionne particulièrement bien.",
+      health: "Bon jour pour surveiller la digestion. Des repas à heures régulières aident.",
+    },
+    shangGuan: {
+      overall: "Les idées vont vite et les mots sortent tranchants. De bonnes idées, mais relisez ce que vous dites avant de le prononcer.",
+      wealth: "Les opportunités liées au talent ou au contenu semblent prometteuses. Attention aux dépenses impulsives.",
+      love: "La franchise peut être prise pour de la critique. Dites la vérité avec douceur et elle passera mieux.",
+      health: "Maux de tête ou nervosité peuvent s'accumuler. Préférez de courtes pauses fréquentes à un long effort continu.",
+    },
+    pianCai: {
+      overall: "Les occasions arrivent de plusieurs côtés aujourd'hui. Avec plus d'options, la concentration compte plus que d'habitude.",
+      wealth: "Une offre inattendue ou un gain imprévu est plausible. Gardez l'optimisme pour une fois la chose confirmée.",
+      love: "Une nouvelle rencontre ou une invitation excitante est probable. Réfléchissez à deux fois avant un projet spontané.",
+      health: "Le niveau d'activité varie, et l'énergie avec lui. Protégez vos heures de sommeil quoi qu'il arrive.",
+    },
+    zhengCai: {
+      overall: "Ce que vous avez construit patiemment est reconnu aujourd'hui. Stabilité et confiance sont les mots du jour.",
+      wealth: "Les dépenses et l'épargne prévues s'accordent bien. Meilleur jour pour organiser que pour de grands nouveaux engagements.",
+      love: "Les relations anciennes paraissent plus chaleureuses que d'habitude. Tenir une petite promesse construit une vraie confiance.",
+      health: "Globalement stable. Profitez-en pour vérifier une posture ou une douleur récurrente.",
+    },
+    qiSha: {
+      overall: "Responsabilité et pression arrivent en même temps. C'est inconfortable, mais c'est aussi ce qui fait avancer les choses.",
+      wealth: "Une gestion ferme des dépenses s'impose. Gardez une réserve prête pour une dépense soudaine.",
+      love: "La tension peut pimenter une relation, mais elle épuise si elle dure. Mieux vaut en parler tôt.",
+      health: "Le stress a tendance à se loger dans le corps. Détendez vos épaules et votre nuque tout au long de la journée.",
+    },
+    zhengGuan: {
+      overall: "Suivre les règles est ce qui est reconnu aujourd'hui. La procédure et la structure sont un raccourci, pas un obstacle.",
+      wealth: "Une gestion financière dans un cadre clair joue en votre faveur. Bon jour pour les impôts, contrats et papiers.",
+      love: "Le sens des responsabilités renforce la confiance. Bon jour pour une conversation sérieuse ou des projets d'avenir.",
+      health: "Une routine régulière protège votre forme. Gardez un horaire de sommeil constant.",
+    },
+    pianYin: {
+      overall: "L'intuition s'aiguise aujourd'hui. Une approche différente de celle des autres pourrait être exactement ce qu'il faut.",
+      wealth: "Une information ou une bonne idée peut se transformer en argent. Ne négligez pas de vérifier avant d'agir, cela pourrait vous coûter cher.",
+      love: "Vous pourriez trop réfléchir en solitaire. Demandez directement plutôt que de deviner.",
+      health: "Le sommeil peut devenir léger avec un esprit occupé. Réduisez les écrans avant de dormir.",
+    },
+    zhengYin: {
+      overall: "Bon jour pour apprendre et se ressourcer. Voyez-le comme une préparation plutôt qu'une urgence à agir.",
+      wealth: "L'argent dépensé pour étudier, obtenir une qualification ou bâtir votre crédibilité rapporte plus qu'un gain rapide.",
+      love: "La compréhension et la patience envers l'autre grandissent aujourd'hui. Un soutien stable et présent vous va bien.",
+      health: "Le repos est le remède du jour. Simplement laisser votre corps ralentir suffit à faire remonter votre énergie.",
+    },
+  },
+  ko: {
+    biJian: {
+      overall: "오늘은 남에게 기대기보다 자기 판단을 믿고 싶어지는 날입니다. 협력보다 독립적인 결정이 잘 맞습니다.",
+      wealth: "큰 지출보다 스스로 벌고 스스로 쓰는 흐름이 유리합니다. 동업이나 공동 투자는 하루 미뤄도 좋습니다.",
+      love: "혼자만의 시간이 편안하게 느껴집니다. 상대에게 맞추기보다 솔직한 의견을 말하는 편이 관계에 도움이 됩니다.",
+      health: "체력은 안정적이지만 고집으로 무리하기 쉬운 날입니다. 몸이 보내는 신호를 무시하지 마세요.",
+    },
+    jieCai: {
+      overall: "경쟁심이 강해지는 날입니다. 추진력은 좋지만 주변과 부딪히지 않도록 속도를 조절하세요.",
+      wealth: "돈이 나가기 쉬운 날입니다. 지인과의 금전 거래, 보증, 즉흥적 투자는 특히 조심하세요.",
+      love: "질투나 비교하는 마음이 앞설 수 있습니다. 상대의 말을 끝까지 듣는 것만으로도 다툼을 줄일 수 있습니다.",
+      health: "긴장과 신경이 예민해지기 쉬운 날입니다. 카페인보다 가벼운 스트레칭이 낫습니다.",
+    },
+    shiShen: {
+      overall: "몸도 마음도 여유가 생기는 날입니다. 표현하고 나누는 일이 잘 풀립니다.",
+      wealth: "꾸준함이 결실로 이어지는 흐름입니다. 취미나 재능을 살린 부수입 기회를 눈여겨보세요.",
+      love: "다정한 말 한마디가 관계를 부드럽게 만듭니다. 함께 먹는 자리가 특히 좋습니다.",
+      health: "소화기와 관련된 컨디션에 신경 쓰면 좋은 날입니다. 규칙적인 식사가 도움이 됩니다.",
+    },
+    shangGuan: {
+      overall: "생각이 빠르고 표현이 날카로워지는 날입니다. 아이디어는 좋지만 말은 한 번 더 다듬어서 하세요.",
+      wealth: "재능이나 콘텐츠로 만드는 수입에 기회가 보입니다. 다만 즉흥적 소비는 늘 수 있습니다.",
+      love: "직설적인 말이 오해를 살 수 있습니다. 맞는 말도 부드럽게 전하는 게 오늘의 관건입니다.",
+      health: "두통이나 신경 쓰임이 늘 수 있는 날입니다. 과로보다 짧은 휴식을 자주 넣으세요.",
+    },
+    pianCai: {
+      overall: "기회가 여러 방향에서 들어오는 날입니다. 발이 넓어지는 만큼 선택과 집중이 필요합니다.",
+      wealth: "예상 밖의 수입이나 제안이 생길 수 있는 날입니다. 다만 확정 전까지는 낙관을 아껴두세요.",
+      love: "새로운 인연이나 설레는 자리가 생기기 쉬운 날입니다. 다만 즉흥적인 약속은 신중히 정하세요.",
+      health: "활동량이 늘며 컨디션도 함께 오르내립니다. 잠자리 시간만은 지켜주세요.",
+    },
+    zhengCai: {
+      overall: "차근차근 쌓아온 것이 인정받는 날입니다. 안정과 신뢰가 오늘의 키워드입니다.",
+      wealth: "계획한 지출과 저축이 잘 맞아떨어집니다. 큰 결정보다 정리와 관리에 좋은 날입니다.",
+      love: "오래된 관계일수록 편안함이 깊어집니다. 작은 약속을 지키는 것이 큰 신뢰로 돌아옵니다.",
+      health: "전반적으로 안정적입니다. 다만 반복되는 자세나 습관성 통증은 이번 기회에 점검해보세요.",
+    },
+    qiSha: {
+      overall: "책임과 압박이 동시에 밀려오는 날입니다. 부담스럽지만 오히려 일이 진행되는 힘이 됩니다.",
+      wealth: "지출을 통제하는 결단이 필요합니다. 갑작스러운 비용 요구가 생길 수 있으니 여유 자금을 두세요.",
+      love: "긴장감이 관계에 자극이 될 수 있지만 오래 끌면 피곤함으로 바뀝니다. 대화로 빨리 풀어내세요.",
+      health: "스트레스가 몸으로 나타나기 쉬운 날입니다. 어깨와 목의 긴장을 자주 풀어주세요.",
+    },
+    zhengGuan: {
+      overall: "원칙대로 움직일 때 인정받는 날입니다. 규칙과 절차를 지키는 것이 오히려 지름길입니다.",
+      wealth: "정해진 규칙 안에서의 재정 관리가 유리합니다. 세금, 계약, 서류 관련 일을 챙기기 좋은 날입니다.",
+      love: "책임감 있는 태도가 신뢰를 더합니다. 진지한 대화나 미래 계획을 꺼내기 좋습니다.",
+      health: "규칙적인 생활이 컨디션을 지켜줍니다. 수면 시간을 일정하게 유지하세요.",
+    },
+    pianYin: {
+      overall: "직관이 예리해지는 날입니다. 남들과 다른 방식이 오히려 통할 수 있습니다.",
+      wealth: "정보나 아이디어가 돈이 되는 흐름입니다. 다만 확인 없이 서두르면 손해로 이어질 수 있습니다.",
+      love: "혼자 생각이 많아지는 날입니다. 짐작으로 넘겨짚기보다 직접 확인하는 편이 낫습니다.",
+      health: "잠이 얕아지거나 생각이 많아 피곤할 수 있습니다. 자기 전 화면 사용을 줄여보세요.",
+    },
+    zhengYin: {
+      overall: "배우고 채우는 것이 잘 맞는 날입니다. 무리하게 나서기보다 준비하는 시간으로 삼으세요.",
+      wealth: "당장의 수익보다 공부와 자격, 신용을 쌓는 데 쓰는 돈이 결국 이득이 됩니다.",
+      love: "상대를 이해하고 배려하는 마음이 커지는 날입니다. 든든한 조언자 역할이 잘 어울립니다.",
+      health: "휴식이 곧 보약인 날입니다. 몸을 쉬게 하는 것만으로 컨디션이 회복됩니다.",
+    },
+  },
+};
+
+// ---------- 정적 UI 문자열 ----------
+const STRINGS = {
+  en: {
+    pageTitle: "Saju Today — Your Four Pillars, Today",
+    metaDescription: "Enter your name, birth date and time, and we'll calculate your real Four Pillars (BaZi) chart and read today's fortune against it.",
+    brand: "Saju Today", brandSub: "Four Pillars",
+    heroTitleLine1: "Your Four Pillars,", heroTitleLine2: "calculated with real astronomy.",
+    heroLede: "We work out the heavenly stems and earthly branches of your birth moment using true solar-term boundaries, then read today's energy against your chart.",
+    labelName: "Name", placeholderName: "Jane Miller",
+    hintName: "Used only to personalize your results, not in the calculation itself.",
+    labelBirthDate: "Birth date (solar calendar)",
+    labelGender: "Gender", optionSelect: "Select", optionMale: "Male", optionFemale: "Female",
+    hintGender: "Used to determine the direction of your luck cycles (Da Yun).",
+    labelBirthTime: "Birth time", labelTimeUnknown: "I don't know",
+    hintTime: "Needed for an accurate Hour Pillar. Without it, we show only the Year, Month and Day Pillars.",
+    labelRegion: "Birthplace",
+    hintRegion: "Used for a true solar time correction (longitude and time zone) that sharpens the Hour Pillar.",
+    labelDST: "Daylight saving time was in effect",
+    hintDST: "Check this if your birthplace was observing daylight saving time on your birth date.",
+    submitBtn: "See My Saju",
+    resultTitleWuxing: "Five-Element Balance",
+    resultTitleToday: "Today's Fortune",
+    pillarYear: "Year Pillar", pillarMonth: "Month Pillar", pillarDay: "Day Pillar", pillarTime: "Hour Pillar",
+    domainWealth: "Wealth", domainLove: "Love", domainHealth: "Health",
+    footerDisclaimer: "Saju Today follows traditional BaZi (Four Pillars) calendrical calculation methods. The interpretations are guidance for reflection only and are not a substitute for your own life decisions.",
+    langLabel: "Language",
+  },
+  zh: {
+    pageTitle: "今日八字 — 你的四柱与今日运势",
+    metaDescription: "输入姓名、出生日期与时间，我们会推算出真实的八字（四柱）命盘，并解读今日运势。",
+    brand: "今日八字", brandSub: "四柱",
+    heroTitleLine1: "你的生辰八字，", heroTitleLine2: "以真实天文历法推算。",
+    heroLede: "我们根据真实节气边界推算你出生那一刻的天干地支，并据此解读今日运势。",
+    labelName: "姓名", placeholderName: "李娜",
+    hintName: "仅用于结果显示，不参与八字计算。",
+    labelBirthDate: "出生日期（阳历）",
+    labelGender: "性别", optionSelect: "请选择", optionMale: "男", optionFemale: "女",
+    hintGender: "用于判断大运的顺行或逆行方向。",
+    labelBirthTime: "出生时间", labelTimeUnknown: "时间不详",
+    hintTime: "精确的时柱需要出生时间。若不知道，仅显示年柱、月柱、日柱三柱。",
+    labelRegion: "出生地",
+    hintRegion: "用于真太阳时校正（经度与时区），以提高时柱的准确度。",
+    labelDST: "出生时正在实行夏令时",
+    hintDST: "如果你的出生地当天正在实行夏令时，请勾选。",
+    submitBtn: "查看我的八字",
+    resultTitleWuxing: "五行平衡",
+    resultTitleToday: "今日运势",
+    pillarYear: "年柱", pillarMonth: "月柱", pillarDay: "日柱", pillarTime: "时柱",
+    domainWealth: "财运", domainLove: "爱情运", domainHealth: "健康运",
+    footerDisclaimer: "「今日八字」遵循传统命理学（八字）的历法推算方式，解读内容仅供参考，不能替代你自己的人生决定。",
+    langLabel: "语言",
+  },
+  fr: {
+    pageTitle: "Saju du Jour — Vos Quatre Piliers, Aujourd'hui",
+    metaDescription: "Entrez votre nom, votre date et heure de naissance : nous calculons votre véritable thème des Quatre Piliers (BaZi) et lisons la fortune du jour.",
+    brand: "Saju du Jour", brandSub: "Quatre Piliers",
+    heroTitleLine1: "Vos Quatre Piliers,", heroTitleLine2: "calculés avec une astronomie réelle.",
+    heroLede: "Nous calculons les tiges célestes et branches terrestres de l'instant de votre naissance selon les véritables limites des termes solaires, puis lisons l'énergie du jour sur cette base.",
+    labelName: "Nom", placeholderName: "Claire Dubois",
+    hintName: "Utilisé uniquement pour personnaliser vos résultats, pas dans le calcul lui-même.",
+    labelBirthDate: "Date de naissance (calendrier solaire)",
+    labelGender: "Genre", optionSelect: "Choisir", optionMale: "Homme", optionFemale: "Femme",
+    hintGender: "Utilisé pour déterminer le sens de vos cycles de chance (Da Yun).",
+    labelBirthTime: "Heure de naissance", labelTimeUnknown: "Je ne sais pas",
+    hintTime: "Nécessaire pour un Pilier de l'Heure précis. Sans elle, seuls les Piliers de l'Année, du Mois et du Jour sont affichés.",
+    labelRegion: "Lieu de naissance",
+    hintRegion: "Utilisé pour une correction en temps solaire vrai (longitude et fuseau horaire) qui affine le Pilier de l'Heure.",
+    labelDST: "L'heure d'été était en vigueur",
+    hintDST: "Cochez si votre lieu de naissance observait l'heure d'été à votre naissance.",
+    submitBtn: "Voir Mon Saju",
+    resultTitleWuxing: "Équilibre des Cinq Éléments",
+    resultTitleToday: "Fortune du Jour",
+    pillarYear: "Pilier de l'Année", pillarMonth: "Pilier du Mois", pillarDay: "Pilier du Jour", pillarTime: "Pilier de l'Heure",
+    domainWealth: "Richesse", domainLove: "Amour", domainHealth: "Santé",
+    footerDisclaimer: "Saju du Jour suit les méthodes de calcul calendaire traditionnelles du BaZi (Quatre Piliers). Les interprétations sont fournies à titre indicatif et ne remplacent pas vos propres décisions de vie.",
+    langLabel: "Langue",
+  },
+  ko: {
+    pageTitle: "사주 오늘 — 오늘의 사주팔자",
+    metaDescription: "이름과 생년월일시를 입력하면 정확한 만세력 계산으로 사주팔자와 오늘의 운세를 알려드립니다.",
+    brand: "사주 오늘", brandSub: "四柱 오늘",
+    heroTitleLine1: "당신의 사주팔자,", heroTitleLine2: "정확한 만세력으로 봅니다.",
+    heroLede: "태어난 순간의 천간과 지지를 절기 기준으로 계산해 오늘의 기운까지 풀어드립니다.",
+    labelName: "이름", placeholderName: "Kwonwoo Lee",
+    hintName: "사주 계산에는 쓰이지 않고 결과 표시에만 사용돼요.",
+    labelBirthDate: "생년월일 (양력)",
+    labelGender: "성별", optionSelect: "선택", optionMale: "남성", optionFemale: "여성",
+    hintGender: "대운(大運)의 순행/역행 방향 계산에 사용돼요.",
+    labelBirthTime: "태어난 시각", labelTimeUnknown: "시간 모름",
+    hintTime: "시주(時柱)까지 정확히 보려면 태어난 시각이 필요해요. 모르면 년주·월주·일주 세 기둥만 보여드려요.",
+    labelRegion: "태어난 지역",
+    hintRegion: "경도차를 반영한 진태양시(眞太陽時) 보정에 사용돼요.",
+    labelDST: "서머타임(일광절약시간제) 적용됨",
+    hintDST: "태어난 날 해당 지역이 서머타임을 시행 중이었다면 체크해주세요.",
+    submitBtn: "내 사주 보기",
+    resultTitleWuxing: "오행 균형",
+    resultTitleToday: "오늘의 운세",
+    pillarYear: "년주", pillarMonth: "월주", pillarDay: "일주", pillarTime: "시주",
+    domainWealth: "재물운", domainLove: "애정운", domainHealth: "건강운",
+    footerDisclaimer: "사주 오늘은 전통 명리학(命理學)의 만세력 계산 방식을 따르되, 해석은 참고용 안내이며 삶의 결정을 대신하지 않습니다.",
+    langLabel: "언어",
+  },
+};
