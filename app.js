@@ -226,7 +226,7 @@ function formatTodayGanji(lang, fortune) {
   }
   const meaning = stemMeaning(lang, fortune.todayStem);
   if (lang === "fr") return `Aujourd'hui est un jour ${animal} (${meaning}) · votre relation avec lui : <strong>${godName}</strong>`;
-  return `Today is a ${meaning} ${animal} day · your relationship with it: <strong>${godName}</strong>`;
+  return `Today's animal is the ${animal} (${meaning} energy) · your relationship with it: <strong>${godName}</strong>`;
 }
 
 function formatFortuneBody(lang, name, element, godName) {
@@ -252,7 +252,9 @@ function formatLuckyRow(lang, colorName, numbers) {
 // ---------- 표시 문자(글리프) ----------
 // 중국어는 실제 한자를, 한국어는 한글 갑자를 보여준다. 영어/프랑스어는 병음(중국어 발음)을
 // 쓰지 않고, 그 나라 말로 뜻이 통하는 음양+오행(천간) / 띠 동물(지지)로 바꿔서 보여준다.
-const YIN_YANG = { en: { yang: "Yang", yin: "Yin" }, fr: { yang: "Yang", yin: "Yin" } };
+// 음양(陰陽)은 원래 그늘(달)과 볕(해)에서 온 개념이라 "Yang/Yin"을 그대로 쓰지 않고
+// Solar(양)/Lunar(음)로 번역한다.
+const YIN_YANG = { en: { yang: "Solar", yin: "Lunar" }, fr: { yang: "Solaire", yin: "Lunaire" } };
 function stemMeaning(lang, stemHanja) {
   const idx = stemIndex(stemHanja);
   const yy = YIN_YANG[lang][isYangIndex(idx) ? "yang" : "yin"];
