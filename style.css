@@ -271,14 +271,20 @@ input::placeholder { color: var(--text-muted); opacity: 0.8; }
   gap: 4px;
   align-items: center;
 }
-.hanja {
-  font-family: var(--font-hanja);
+.pillar-glyph {
   font-weight: 700;
-  font-size: 2.1rem;
   line-height: 1.15;
   padding-bottom: 2px;
 }
-.hanja.small { font-size: 1.6rem; }
+/* 중국어 화면에서만 실제 한자 글리프를 표시한다 */
+.pillar-glyph.cjk { font-family: var(--font-hanja); font-size: 2.1rem; }
+/* 한국어 화면은 한글 갑자(60甲子) 표기 */
+.pillar-glyph.hangul { font-family: var(--font-hanja); font-size: 1.85rem; }
+/* 영어/프랑스어 화면은 병음 로마자 표기, 한자 없음 */
+.pillar-glyph.roman { font-family: var(--font-ui); font-size: 1.4rem; letter-spacing: -0.01em; }
+.pillar-glyph.small.cjk { font-size: 1.6rem; }
+.pillar-glyph.small.hangul { font-size: 1.4rem; }
+.pillar-glyph.small.roman { font-size: 1.15rem; }
 .pillar-reading {
   margin: 10px 0 0;
   font-size: 0.78rem;

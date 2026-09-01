@@ -148,13 +148,22 @@ function formatResultTitle(lang, name, hasTime) {
   }
 }
 
+// 프랑스어 "de/d'" 축약 (모음으로 시작하는 단어 앞에서 d')
+function frDe(word) {
+  return /^[AEIOUÉÈÊËÀÂÎÏÔÙÛÜ]/i.test(word) ? `d'${word}` : `de ${word}`;
+}
+
 function formatPillarReading(lang, p) {
-  if (lang === "ko") return `${p.stemKo}${p.branchKo} · ${BRANCH_ANIMALS.ko[p.animalIndex]}띠 기운`;
-  const roman = `${STEM_ROMAN[stemIndex(p.stem)]}-${BRANCH_ROMAN[branchIndex(p.branch)]}`;
   const animal = BRANCH_ANIMALS[lang][p.animalIndex];
-  if (lang === "zh") return `${roman} · ${animal}年气息`;
-  if (lang === "fr") return `${roman} · Énergie du ${animal}`;
-  return `${roman} · ${animal} energy`;
+  if (lang === "ko") return `${p.stemKo}${p.branchKo} · ${BRANCH_ANIMALS.ko[p.animalIndex]}띠 기운`;
+  if (lang === "zh") {
+    const roman = `${STEM_ROMAN[stemIndex(p.stem)]}-${BRANCH_ROMAN[branchIndex(p.branch)]}`;
+    return `${roman} · ${animal}年气息`;
+  }
+  const stemEl = STEM_ELEMENT[stemIndex(p.stem)];
+  const elName = ELEMENT_NAMES[lang][stemEl];
+  if (lang === "fr") return `${animal} ${frDe(elName)}`;
+  return `${elName} ${animal}`;
 }
 
 const DIR_SLOW = { en: "slower", zh: "慢", fr: "plus lente", ko: "느리게" };
@@ -170,7 +179,7 @@ function formatCorrectionNote(lang, hasTime, regionLabel, offsetMinutes, correct
       en: "Birth time unknown, showing only the Year, Month and Day Pillars (Hour Pillar omitted).",
       zh: "出生时间不详，仅显示年柱、月柱、日柱（省略时柱）。",
       fr: "Heure de naissance inconnue, seuls les Piliers de l'Année, du Mois et du Jour sont affichés (Pilier de l'Heure omis).",
-      ko: "태어난 시각 미상 · 시주(時柱)는 제외한 3기둥만 표기합니다.",
+      ko: "태어난 시각 미상 · 시주는 제외한 3기둥만 표기합니다.",
     }[lang];
   } else if (!correctionApplied) {
     note = {
@@ -215,7 +224,7 @@ function formatTodayGanji(lang, fortune) {
 
 function formatFortuneBody(lang, name, element, godName) {
   const elName = ELEMENT_NAMES[lang][element];
-  if (lang === "ko") return `오늘의 일간은 ${elName}(${ELEMENT_HANJA[element]}) 기운이고, ${name}님의 일간과는 '${godName}' 관계를 이룹니다.`;
+  if (lang === "ko") return `오늘의 일간은 ${elName} 기운이고, ${name}님의 일간과는 '${godName}' 관계를 이룹니다.`;
   if (lang === "zh") return `今日日干为${elName}之气，与${name}的日主构成「${godName}」关系。`;
   if (lang === "fr") return `La Tige du Jour porte aujourd'hui l'énergie ${elName}, formant une relation « ${godName} » avec le Maître du Jour de ${name}.`;
   return `Today's Day Stem carries ${elName} energy, forming a "${godName}" relationship with ${name}'s Day Master.`;
@@ -233,15 +242,36 @@ function formatLuckyRow(lang, colorName, numbers) {
   return `<span>${labels[0]}<strong>${colorName}</strong></span><span>${labels[1]}<strong>${numStr}</strong></span>`;
 }
 
+// ---------- 표시 문자(글리프) ----------
+// 중국어는 실제 한자를, 그 외 언어는 병음 로마자(en/fr) 또는 한글 갑자(ko)를 큰 글자로 보여준다.
+// 한자는 중국어 화면에서만 등장한다.
+function glyphScript(lang) {
+  if (lang === "zh") return "cjk";
+  if (lang === "ko") return "hangul";
+  return "roman";
+}
+function pillarGlyphs(lang, p) {
+  if (lang === "zh") return [p.stem, p.branch];
+  if (lang === "ko") return [p.stemKo, p.branchKo];
+  return [STEM_ROMAN[stemIndex(p.stem)], BRANCH_ROMAN[branchIndex(p.branch)]];
+}
+function todayGlyphText(lang, fortune) {
+  if (lang === "zh") return fortune.todayStem + fortune.todayBranch;
+  if (lang === "ko") return fortune.todayStemKo + fortune.todayBranchKo;
+  return `${STEM_ROMAN[stemIndex(fortune.todayStem)]}-${BRANCH_ROMAN[branchIndex(fortune.todayBranch)]}`;
+}
+
 // ---------- 렌더링 ----------
 function pillarNode(lang, label, p) {
   const el = document.createElement("div");
   el.className = "pillar";
+  const script = glyphScript(lang);
+  const [stemGlyph, branchGlyph] = pillarGlyphs(lang, p);
   el.innerHTML = `
     <p class="pillar-label">${label}</p>
     <div class="pillar-chars">
-      <span class="hanja" data-element="${STEM_ELEMENT[stemIndex(p.stem)]}">${p.stem}</span>
-      <span class="hanja" data-element="${BRANCH_ELEMENT[branchIndex(p.branch)]}">${p.branch}</span>
+      <span class="pillar-glyph ${script}" data-element="${STEM_ELEMENT[stemIndex(p.stem)]}">${stemGlyph}</span>
+      <span class="pillar-glyph ${script}" data-element="${BRANCH_ELEMENT[branchIndex(p.branch)]}">${branchGlyph}</span>
     </div>
     <p class="pillar-reading">${formatPillarReading(lang, p)}</p>
   `;
@@ -276,7 +306,7 @@ function renderResults(lang, result) {
     row.className = "wuxing-row";
     row.style.setProperty("--stagger", i);
     row.innerHTML = `
-      <span class="wuxing-label" data-element="${el}">${ELEMENT_HANJA[el]} ${ELEMENT_NAMES[lang][el]}</span>
+      <span class="wuxing-label" data-element="${el}">${ELEMENT_NAMES[lang][el]}</span>
       <div class="wuxing-track"><div class="wuxing-fill" data-element="${el}" style="--pct:${pct}%"></div></div>
       <span class="wuxing-count">${count}</span>
     `;
@@ -287,7 +317,7 @@ function renderResults(lang, result) {
   document.getElementById("today-date").textContent = todayStr;
 
   document.getElementById("today-ganji").innerHTML = `
-    <span class="hanja small" data-element="${fortune.todayElement}">${fortune.todayStem}${fortune.todayBranch}</span>
+    <span class="pillar-glyph small ${glyphScript(lang)}" data-element="${fortune.todayElement}">${todayGlyphText(lang, fortune)}</span>
     <span class="today-ganji-label">${formatTodayGanji(lang, fortune)}</span>
   `;
 
