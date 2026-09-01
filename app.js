@@ -251,15 +251,13 @@ function formatLuckyRow(lang, colorName, numbers) {
 
 // ---------- 표시 문자(글리프) ----------
 // 중국어는 실제 한자를, 한국어는 한글 갑자를 보여준다. 영어/프랑스어는 병음(중국어 발음)을
-// 쓰지 않고, 그 나라 말로 뜻이 통하는 음양+오행(천간) / 띠 동물(지지)로 바꿔서 보여준다.
-// 음양(陰陽)은 원래 그늘(달)과 볕(해)에서 온 개념이라 "Yang/Yin"을 그대로 쓰지 않고
-// Solar(양)/Lunar(음)로 번역한다.
-const YIN_YANG = { en: { yang: "Solar", yin: "Lunar" }, fr: { yang: "Solaire", yin: "Lunaire" } };
+// 쓰지 않고, 그 나라 말로 뜻이 통하는 오행(천간) / 띠 동물(지지)로 바꿔서 보여준다.
+// 음양(陰陽)은 +/- 기운이므로 "Yang/Yin"이라는 외래어 대신 기호로 표기한다 (언어 무관, 번역 불필요).
 function stemMeaning(lang, stemHanja) {
   const idx = stemIndex(stemHanja);
-  const yy = YIN_YANG[lang][isYangIndex(idx) ? "yang" : "yin"];
+  const sign = isYangIndex(idx) ? "+" : "−"; // U+2212 MINUS SIGN
   const el = ELEMENT_NAMES[lang][STEM_ELEMENT[idx]];
-  return lang === "fr" ? `${el} ${yy}` : `${yy} ${el}`;
+  return `${sign} ${el}`;
 }
 function glyphScript(lang) {
   if (lang === "zh") return "cjk";

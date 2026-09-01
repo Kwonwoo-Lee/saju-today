@@ -35,9 +35,6 @@ const REGIONS = [
 
   // Korea
   { id: "seoul", lng: 126.98, utcOffset: 9, names: { en: "Seoul", zh: "首尔", fr: "Séoul", ko: "서울" } },
-  { id: "busan", lng: 129.08, utcOffset: 9, names: { en: "Busan", zh: "釜山", fr: "Busan", ko: "부산" } },
-  { id: "incheon", lng: 126.70, utcOffset: 9, names: { en: "Incheon", zh: "仁川", fr: "Incheon", ko: "인천" } },
-  { id: "daegu", lng: 128.60, utcOffset: 9, names: { en: "Daegu", zh: "大邱", fr: "Daegu", ko: "대구" } },
 
   // Other reference points
   { id: "london", lng: -0.13, utcOffset: 0, names: { en: "London", zh: "伦敦", fr: "Londres", ko: "런던" } },
