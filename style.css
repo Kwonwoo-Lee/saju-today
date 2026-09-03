@@ -43,6 +43,11 @@
 
 * { box-sizing: border-box; }
 
+/* [hidden]의 display:none은 브라우저 기본(UA) 스타일이라, .field-row 같은 display를 지정하는
+   클래스가 같은 태그에 붙으면 저자 스타일이 UA 스타일을 이겨서 hidden이 무시된다.
+   그래서 hidden은 항상 이기게 명시적으로 다시 선언한다. */
+[hidden] { display: none !important; }
+
 html { color-scheme: dark; }
 
 body {
