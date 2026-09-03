@@ -73,16 +73,11 @@ function applyStaticStrings(lang) {
   document.getElementById("nav-analysis").textContent = s.navAnalysis;
   document.getElementById("nav-year").textContent = s.navYear;
   document.getElementById("nav-compat").textContent = s.navCompat;
-  document.getElementById("nav-consult").textContent = s.navConsult;
-  document.getElementById("nav-mypage").textContent = s.navMypage;
-  document.getElementById("nav-login").textContent = s.navLogin;
-  document.getElementById("nav-signup").textContent = s.navSignup;
 
   document.getElementById("footer-brand-name").textContent = s.brand;
   document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
   document.getElementById("footer-nav-year").textContent = s.navYear;
   document.getElementById("footer-nav-compat").textContent = s.navCompat;
-  document.getElementById("footer-nav-consult").textContent = s.navConsult;
   document.getElementById("footer-copyright").textContent = s.footerCopyright;
 }
 
