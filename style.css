@@ -92,7 +92,7 @@ select:focus-visible {
 .site-header {
   position: relative;
   z-index: var(--z-header);
-  padding: 18px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border);
   background: rgba(6, 7, 15, 0.6);
   backdrop-filter: blur(12px);
@@ -194,7 +194,7 @@ select:focus-visible {
 .hero {
   position: relative;
   overflow: clip;
-  padding: 84px 0 72px;
+  padding: 40px 0 56px;
   background: radial-gradient(ellipse 120% 90% at 50% -10%, #0d1130, var(--bg) 60%);
 }
 .hero-sky {
