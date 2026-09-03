@@ -32,6 +32,13 @@ function applyStaticStrings(lang) {
   document.getElementById("hero-title-1").textContent = s.heroTitleLine1;
   document.getElementById("hero-title-2").textContent = s.heroTitleLine2;
   document.getElementById("hero-lede").textContent = s.heroLede;
+  document.getElementById("hero-form-title").textContent = s.heroFormTitle;
+  document.getElementById("feature-pillars-title").textContent = s.featurePillarsTitle;
+  document.getElementById("feature-pillars-body").textContent = s.featurePillarsBody;
+  document.getElementById("feature-wuxing-title").textContent = s.featureWuxingTitle;
+  document.getElementById("feature-wuxing-body").textContent = s.featureWuxingBody;
+  document.getElementById("feature-today-title").textContent = s.featureTodayTitle;
+  document.getElementById("feature-today-body").textContent = s.featureTodayBody;
 
   document.getElementById("label-name").textContent = s.labelName;
   document.getElementById("name").placeholder = s.placeholderName;

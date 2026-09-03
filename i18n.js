@@ -333,6 +333,10 @@ const STRINGS = {
     domainWealth: "Wealth", domainLove: "Love", domainHealth: "Health",
     footerDisclaimer: "Saju Today follows traditional BaZi (Four Pillars) calendrical calculation methods. The interpretations are guidance for reflection only and are not a substitute for your own life decisions.",
     langLabel: "Language",
+    heroFormTitle: "Start your free reading",
+    featurePillarsTitle: "Your Four Pillars", featurePillarsBody: "Year, month, day and hour pillars from true solar-term calculation, shown in a script your language actually reads.",
+    featureWuxingTitle: "Five-Element Balance", featureWuxingBody: "A radar chart of wood, fire, earth, metal and water across your chart, so you can see what's strong and what's missing.",
+    featureTodayTitle: "Today's Fortune", featureTodayBody: "Today's day pillar read against your day master, with wealth, love and health takes for the day.",
   },
   zh: {
     pageTitle: "今日八字 — 你的四柱与今日运势",
@@ -358,6 +362,10 @@ const STRINGS = {
     domainWealth: "财运", domainLove: "爱情运", domainHealth: "健康运",
     footerDisclaimer: "「今日八字」遵循传统命理学（八字）的历法推算方式，解读内容仅供参考，不能替代你自己的人生决定。",
     langLabel: "语言",
+    heroFormTitle: "开始免费测算",
+    featurePillarsTitle: "你的四柱", featurePillarsBody: "根据真实节气推算的年柱、月柱、日柱、时柱，以你能读懂的文字呈现。",
+    featureWuxingTitle: "五行平衡", featureWuxingBody: "用雷达图展示命盘中木火土金水的分布，一眼看出哪个旺、哪个缺。",
+    featureTodayTitle: "今日运势", featureTodayBody: "用今日日柱对照你的日主，给出今天的财运、爱情运与健康运解读。",
   },
   fr: {
     pageTitle: "Saju du Jour — Vos Quatre Piliers, Aujourd'hui",
@@ -383,6 +391,10 @@ const STRINGS = {
     domainWealth: "Richesse", domainLove: "Amour", domainHealth: "Santé",
     footerDisclaimer: "Saju du Jour suit les méthodes de calcul calendaire traditionnelles du BaZi (Quatre Piliers). Les interprétations sont fournies à titre indicatif et ne remplacent pas vos propres décisions de vie.",
     langLabel: "Langue",
+    heroFormTitle: "Commencez votre lecture gratuite",
+    featurePillarsTitle: "Vos Quatre Piliers", featurePillarsBody: "Piliers de l'année, du mois, du jour et de l'heure calculés selon les vrais termes solaires, affichés dans une écriture que vous lisez vraiment.",
+    featureWuxingTitle: "Équilibre des Cinq Éléments", featureWuxingBody: "Un graphique radar du bois, du feu, de la terre, du métal et de l'eau dans votre thème, pour voir ce qui domine et ce qui manque.",
+    featureTodayTitle: "Fortune du Jour", featureTodayBody: "Le pilier du jour lu face à votre Maître du Jour, avec une lecture de la richesse, de l'amour et de la santé pour aujourd'hui.",
   },
   ko: {
     pageTitle: "사주 오늘 — 오늘의 사주팔자",
@@ -408,5 +420,9 @@ const STRINGS = {
     domainWealth: "재물운", domainLove: "애정운", domainHealth: "건강운",
     footerDisclaimer: "사주 오늘은 전통 명리학의 만세력 계산 방식을 따르되, 해석은 참고용 안내이며 삶의 결정을 대신하지 않습니다.",
     langLabel: "언어",
+    heroFormTitle: "무료로 내 사주 보기",
+    featurePillarsTitle: "사주팔자", featurePillarsBody: "절기 기준으로 정확히 계산한 년주·월주·일주·시주를 내 언어로 바로 읽을 수 있게 보여드려요.",
+    featureWuxingTitle: "오행 균형", featureWuxingBody: "목화토금수 다섯 기운의 분포를 레이더 차트로 한눈에 — 뭐가 강하고 뭐가 부족한지 바로 보여요.",
+    featureTodayTitle: "오늘의 운세", featureTodayBody: "오늘의 일주를 내 일간과 비교해서, 오늘 하루의 재물운·애정운·건강운을 풀어드려요.",
   },
 };

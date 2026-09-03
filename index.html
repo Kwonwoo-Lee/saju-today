@@ -6,7 +6,7 @@
 <title id="page-title">Saju Today — Your Four Pillars, Today</title>
 <meta id="meta-description" name="description" content="Enter your name, birth date and time, and we'll calculate your real Four Pillars (BaZi) chart and read today's fortune against it.">
 <link rel="canonical" href="https://saju.tradesmrt.com/">
-<meta name="theme-color" content="#0e1220">
+<meta name="theme-color" content="#06070f">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
 
 <meta property="og:type" content="website">
@@ -47,6 +47,9 @@
 
 <header class="site-header">
   <div class="wrap">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="brand-mark-ring"></circle><circle cx="20" cy="20" r="10" class="brand-mark-ring brand-mark-ring--in"></circle><circle cx="20" cy="20" r="3" class="brand-mark-core"></circle></svg>
+    </span>
     <span class="brand" id="brand-name">Saju Today</span>
     <span class="brand-sub" id="brand-sub">Four Pillars</span>
     <select id="lang-switch" class="lang-switch" aria-label="Language">
@@ -59,36 +62,73 @@
 </header>
 
 <main>
-  <section class="intro">
-    <div class="wrap intro-grid">
-      <div class="intro-copy">
-        <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2">calculated with real astronomy.</span></h1>
+  <section class="hero">
+    <div class="hero-sky" aria-hidden="true">
+      <div class="hero-stars hero-stars--a"></div>
+      <div class="hero-stars hero-stars--b"></div>
+      <div class="nebula nebula--blue"></div>
+      <div class="nebula nebula--gold"></div>
+      <span class="shooting-star shooting-star--1"></span>
+      <span class="shooting-star shooting-star--2"></span>
+      <svg class="constellation constellation--left" viewBox="0 0 160 200">
+        <g class="constellation-lines">
+          <line x1="20" y1="30" x2="55" y2="70"></line>
+          <line x1="55" y1="70" x2="40" y2="130"></line>
+          <line x1="55" y1="70" x2="100" y2="90"></line>
+          <line x1="100" y1="90" x2="120" y2="150"></line>
+        </g>
+        <g class="constellation-stars">
+          <circle cx="20" cy="30" r="2"></circle>
+          <circle cx="55" cy="70" r="2.4"></circle>
+          <circle cx="40" cy="130" r="1.8"></circle>
+          <circle cx="100" cy="90" r="2"></circle>
+          <circle cx="120" cy="150" r="1.8"></circle>
+        </g>
+      </svg>
+      <svg class="constellation constellation--right" viewBox="0 0 160 200">
+        <g class="constellation-lines">
+          <line x1="130" y1="24" x2="100" y2="60"></line>
+          <line x1="100" y1="60" x2="118" y2="110"></line>
+          <line x1="100" y1="60" x2="55" y2="80"></line>
+          <line x1="55" y1="80" x2="30" y2="140"></line>
+        </g>
+        <g class="constellation-stars">
+          <circle cx="130" cy="24" r="2"></circle>
+          <circle cx="100" cy="60" r="2.4"></circle>
+          <circle cx="118" cy="110" r="1.8"></circle>
+          <circle cx="55" cy="80" r="2"></circle>
+          <circle cx="30" cy="140" r="1.8"></circle>
+        </g>
+      </svg>
+    </div>
+
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="hero-orbit" aria-hidden="true">
+          <svg viewBox="0 0 320 320" class="astrolabe">
+            <ellipse class="orbit-ring orbit-ring--a" cx="160" cy="160" rx="150" ry="80"></ellipse>
+            <ellipse class="orbit-ring orbit-ring--b" cx="160" cy="160" rx="118" ry="128"></ellipse>
+            <g class="astrolabe-spin astrolabe-spin--slow">
+              <circle class="astrolabe-ring astrolabe-ring--outer" cx="160" cy="160" r="150"></circle>
+              <g class="astrolabe-ticks" id="astrolabe-ticks"></g>
+            </g>
+            <g class="astrolabe-spin astrolabe-spin--rev">
+              <circle class="astrolabe-dot" data-element="wood" cx="160" cy="48" r="6"></circle>
+              <circle class="astrolabe-dot" data-element="fire" cx="267" cy="125" r="6"></circle>
+              <circle class="astrolabe-dot" data-element="earth" cx="226" cy="251" r="6"></circle>
+              <circle class="astrolabe-dot" data-element="metal" cx="94" cy="251" r="6"></circle>
+              <circle class="astrolabe-dot" data-element="water" cx="54" cy="125" r="6"></circle>
+            </g>
+            <circle class="astrolabe-core-glow" cx="160" cy="160" r="34"></circle>
+            <circle class="astrolabe-core" cx="160" cy="160" r="28"></circle>
+          </svg>
+        </div>
+        <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2" class="hero-title-accent">calculated with real astronomy.</span></h1>
         <p class="lede" id="hero-lede">We work out the heavenly stems and earthly branches of your birth moment using true solar-term boundaries, then read today's energy against your chart.</p>
       </div>
-      <div class="intro-emblem" aria-hidden="true">
-        <svg viewBox="0 0 320 320" class="astrolabe">
-          <g class="astrolabe-spin astrolabe-spin--slow">
-            <circle class="astrolabe-ring astrolabe-ring--outer" cx="160" cy="160" r="150"></circle>
-            <g class="astrolabe-ticks" id="astrolabe-ticks"></g>
-          </g>
-          <circle class="astrolabe-ring astrolabe-ring--mid" cx="160" cy="160" r="112"></circle>
-          <g class="astrolabe-spin astrolabe-spin--rev">
-            <circle class="astrolabe-dot" data-element="wood" cx="160" cy="48" r="6"></circle>
-            <circle class="astrolabe-dot" data-element="fire" cx="267" cy="125" r="6"></circle>
-            <circle class="astrolabe-dot" data-element="earth" cx="226" cy="251" r="6"></circle>
-            <circle class="astrolabe-dot" data-element="metal" cx="94" cy="251" r="6"></circle>
-            <circle class="astrolabe-dot" data-element="water" cx="54" cy="125" r="6"></circle>
-          </g>
-          <circle class="astrolabe-ring astrolabe-ring--inner" cx="160" cy="160" r="74"></circle>
-          <circle class="astrolabe-core" cx="160" cy="160" r="28"></circle>
-        </svg>
-      </div>
-    </div>
-  </section>
 
-  <section class="form-section" id="form-section">
-    <div class="wrap">
-      <form id="saju-form" novalidate>
+      <form id="saju-form" class="hero-form" novalidate>
+        <p class="hero-form-title" id="hero-form-title">Start your free reading</p>
         <div class="field">
           <label for="name" id="label-name">Name</label>
           <input type="text" id="name" name="name" placeholder="Jane Miller" autocomplete="name" maxlength="60" required>
@@ -144,6 +184,32 @@
           <span id="submit-btn-label">See My Saju</span>
         </button>
       </form>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="wrap features-grid">
+      <div class="feature-card feature-card--pillars">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><rect x="8" y="6" width="6" height="28" rx="2"></rect><rect x="17" y="6" width="6" height="28" rx="2"></rect><rect x="26" y="6" width="6" height="28" rx="2"></rect></svg>
+        </span>
+        <h3 id="feature-pillars-title">Your Four Pillars</h3>
+        <p id="feature-pillars-body">Year, month, day and hour pillars from true solar-term calculation, shown in a script your language actually reads.</p>
+      </div>
+      <div class="feature-card feature-card--wuxing">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><polygon points="20,4 34,14 29,32 11,32 6,14"></polygon></svg>
+        </span>
+        <h3 id="feature-wuxing-title">Five-Element Balance</h3>
+        <p id="feature-wuxing-body">A radar chart of wood, fire, earth, metal and water across your chart, so you can see what's strong and what's missing.</p>
+      </div>
+      <div class="feature-card feature-card--today">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="9"></circle><line x1="20" y1="2" x2="20" y2="8"></line><line x1="20" y1="32" x2="20" y2="38"></line><line x1="2" y1="20" x2="8" y2="20"></line><line x1="32" y1="20" x2="38" y2="20"></line></svg>
+        </span>
+        <h3 id="feature-today-title">Today's Fortune</h3>
+        <p id="feature-today-body">Today's day pillar read against your day master, with wealth, love and health takes for the day.</p>
+      </div>
     </div>
   </section>
 
