@@ -33,6 +33,7 @@ function applyStaticStrings(lang) {
   document.getElementById("hero-title-2").textContent = s.heroTitleLine2;
   document.getElementById("hero-eyebrow").textContent = s.brand;
   document.getElementById("hero-form-title").textContent = s.heroFormTitle;
+  document.getElementById("form-back-label").textContent = s.formBack;
   document.getElementById("feature-pillars-title").textContent = s.featurePillarsTitle;
   document.getElementById("feature-pillars-body").textContent = s.featurePillarsBody;
   document.getElementById("feature-wuxing-title").textContent = s.featureWuxingTitle;
@@ -183,9 +184,10 @@ nameInput.addEventListener("input", () => {
 });
 
 // ---------- 생년월일 입력 (점(.) 포맷 텍스트 필드) ----------
-function setupDateField(displayId, hiddenId) {
+function setupDateField(displayId, hiddenId, nativeId) {
   const displayEl = document.getElementById(displayId);
   const hiddenEl = document.getElementById(hiddenId);
+  const nativeEl = document.getElementById(nativeId);
 
   function format(raw) {
     const digits = raw.replace(/\D/g, "").slice(0, 8);
@@ -216,11 +218,27 @@ function setupDateField(displayId, hiddenId) {
   });
   displayEl.addEventListener("blur", sync);
 
+  // 달력 아이콘 자리에 투명하게 얹힌 네이티브 date input. 클릭하면 실제 달력이 뜨고,
+  // 날짜를 고르면 점(.) 포맷 텍스트란과 숨김 필드에 그대로 반영된다.
+  if (nativeEl) {
+    nativeEl.addEventListener("click", () => {
+      if (typeof nativeEl.showPicker === "function") {
+        try { nativeEl.showPicker(); } catch (e) { /* 사용자 제스처 밖 등에서는 조용히 무시 */ }
+      }
+    });
+    nativeEl.addEventListener("change", () => {
+      if (!nativeEl.value) return;
+      const [y, m, d] = nativeEl.value.split("-");
+      displayEl.value = `${y}.${m}.${d}`;
+      sync();
+    });
+  }
+
   return { displayEl, sync };
 }
 
-const birthDateField = setupDateField("birth-date-display", "birth-date");
-const partnerBirthDateField = setupDateField("partner-birth-date-display", "partner-birth-date");
+const birthDateField = setupDateField("birth-date-display", "birth-date", "birth-date-native");
+const partnerBirthDateField = setupDateField("partner-birth-date-display", "partner-birth-date", "partner-birth-date-native");
 
 // ---------- 폼 제출 ----------
 const form = document.getElementById("saju-form");
@@ -317,20 +335,51 @@ function applyResultTabVisibility() {
   compatTabBtn.classList.toggle("is-disabled", !hasCompat);
 }
 
-// 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
-// 아직 궁합 데이터가 없는 상태로 궁합을 선택하면, 빈 탭을 보여주는 대신 상대방 입력란으로 안내한다.
-function goToResultTab(tab) {
-  if (tab === "compat" && !(lastResult && lastResult.compat)) {
+// ---------- 랜딩(카드 선택) / 입력 폼 화면 전환 ----------
+// 처음엔 입력 칸 없이 카드 3개만 보여주고, 카드를 누르면 그때 해당 운세용 입력 폼으로 들어간다.
+const heroGrid = document.getElementById("hero-grid");
+const heroFormWrap = document.getElementById("hero-form-wrap");
+const formBackBtn = document.getElementById("form-back-btn");
+
+function showLanding() {
+  heroGrid.classList.add("is-landing");
+  heroFormWrap.hidden = true;
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+}
+function showFormView(tab) {
+  heroGrid.classList.remove("is-landing");
+  heroFormWrap.hidden = false;
+  if (tab === "compat") {
     partnerToggle.checked = true;
     partnerFields.hidden = false;
-    form.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+  }
+  if (tab) activeResultTab = tab;
+  history.replaceState(null, "", "#" + (tab || "form"));
+  heroFormWrap.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+}
+formBackBtn.addEventListener("click", showLanding);
+
+// 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
+// 아직 사주 계산 전이면 해당 탭에 맞는 입력 폼을 열고, 궁합인데 상대방 정보가 없다면
+// 빈 탭을 보여주는 대신 상대방 입력란으로 안내한다.
+function goToResultTab(tab) {
+  if (tab === "compat" && !(lastResult && lastResult.compat)) {
+    showFormView("compat");
     document.getElementById("partner-birth-date-display").focus({ preventScroll: true });
+    return;
+  }
+  if (!lastResult) {
+    showFormView(tab);
     return;
   }
   activeResultTab = tab;
   applyResultTabVisibility();
-  (lastResult ? resultsSection : form).scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+  resultsSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
 }
+
+// 초기 진입: 주소에 #today/#year/#compat 이 붙어 있으면 바로 그 폼으로 들어간다.
+const initialHash = location.hash.replace("#", "");
+if (["today", "year", "compat"].includes(initialHash)) showFormView(initialHash);
 
 resultTabButtons.forEach((btn) => btn.addEventListener("click", () => goToResultTab(btn.dataset.tab)));
 document.querySelectorAll(".feature-card--clickable").forEach((card) => {
@@ -338,6 +387,13 @@ document.querySelectorAll(".feature-card--clickable").forEach((card) => {
 });
 [["nav-year", "year"], ["footer-nav-year", "year"], ["nav-compat", "compat"], ["footer-nav-compat", "compat"]].forEach(([id, tab]) => {
   document.getElementById(id).addEventListener("click", (e) => { e.preventDefault(); goToResultTab(tab); });
+});
+["nav-analysis", "footer-nav-analysis"].forEach((id) => {
+  document.getElementById(id).addEventListener("click", (e) => {
+    e.preventDefault();
+    if (lastResult) { document.getElementById("block-pillars").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" }); return; }
+    showFormView();
+  });
 });
 
 // ---------- 포맷팅 헬퍼 (언어별 어순 처리) ----------

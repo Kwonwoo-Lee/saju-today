@@ -361,6 +361,35 @@ select:focus-visible {
 }
 .hero-copy { position: relative; }
 
+/* 랜딩(카드 선택) 상태: 폼은 숨기고, 문구·카드를 가운데 정렬 한 열로 보여준다 */
+.hero-grid.is-landing {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+.hero-grid.is-landing .hero-copy { max-width: 760px; }
+.hero-grid.is-landing .hero-orbit { margin-left: auto; margin-right: auto; }
+.hero-grid.is-landing .hero-cards { width: 100%; max-width: 920px; margin-top: 6px; }
+
+.hero-form-wrap { position: relative; }
+.form-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 0;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s var(--ease);
+}
+.form-back-btn:hover { color: var(--text); }
+.form-back-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 .hero-eyebrow {
   margin: 0 0 10px;
   font-size: 0.9rem;
@@ -491,6 +520,22 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   pointer-events: none;
 }
 .date-input-wrap input.field-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(226, 121, 95, 0.18); }
+/* 달력 아이콘 위에 얹힌, 실제로 클릭하면 네이티브 달력이 뜨는 투명 date input.
+   너비를 아이콘 근처로만 좁혀서, 나머지 영역은 계속 직접 타이핑에 쓸 수 있게 한다. */
+.date-native-input {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  width: 28px;
+  height: 100%;
+  opacity: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
 
 .hint {
   margin: 0;
@@ -589,13 +634,13 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .submit-btn:hover::before { transform: translateX(120%); }
 .submit-btn:active { transform: scale(0.97); }
 
-/* ---------- features row ---------- */
-.features { padding: 8px 0 8px; position: relative; z-index: 1; }
-.features-grid {
-  display: grid;
+/* ---------- hero cards (landing view) ---------- */
+.hero-cards {
+  display: none;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
+.hero-grid.is-landing .hero-cards { display: grid; }
 .feature-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -841,7 +886,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-orbit { width: min(80vw, 300px); margin: 20px auto; }
   .hero-copy { text-align: left; }
-  .features-grid { grid-template-columns: 1fr; }
+  .hero-cards { grid-template-columns: 1fr; }
   .results-top { grid-template-columns: 1fr; }
   #block-pillars { padding: 40px 0; border-right: none; border-bottom: 1px solid var(--border); }
   #block-wuxing { padding: 40px 0; }
