@@ -100,6 +100,7 @@ select:focus-visible {
 .site-header-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 28px;
 }
 .brand-lockup {
@@ -127,23 +128,6 @@ select:focus-visible {
   font-size: 0.85rem;
 }
 
-.site-nav {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-  flex: 1;
-}
-.site-nav a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.88rem;
-  font-weight: 500;
-  white-space: nowrap;
-  transition: color 0.2s var(--ease);
-}
-.site-nav a:hover { color: var(--text); }
-.site-nav a[aria-disabled="true"] { cursor: default; }
-
 .site-header-actions {
   display: flex;
   align-items: center;
@@ -164,11 +148,6 @@ select:focus-visible {
 }
 .lang-switch:hover { border-color: var(--accent); }
 .lang-switch option { background: #12142a; color: var(--text); }
-
-/* 데스크톱 한 줄에 다 안 들어가면 nav 링크부터 숨긴다 (언어 선택은 유지) */
-@media (max-width: 980px) {
-  .site-nav { display: none; }
-}
 
 /* ---------- hero / cosmic sky ---------- */
 .hero {

@@ -75,10 +75,6 @@ function applyStaticStrings(lang) {
   document.getElementById("footer-disclaimer").textContent = s.footerDisclaimer;
   document.getElementById("lang-switch").setAttribute("aria-label", s.langLabel);
 
-  document.getElementById("nav-analysis").textContent = s.navAnalysis;
-  document.getElementById("nav-year").textContent = s.navYear;
-  document.getElementById("nav-compat").textContent = s.navCompat;
-
   document.getElementById("footer-brand-name").textContent = s.brand;
   document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
   document.getElementById("footer-nav-year").textContent = s.navYear;
@@ -402,15 +398,23 @@ resultTabButtons.forEach((btn) => btn.addEventListener("click", () => goToResult
 document.querySelectorAll(".feature-card--clickable").forEach((card) => {
   card.addEventListener("click", () => goToResultTab(card.dataset.tab));
 });
-[["nav-year", "year"], ["footer-nav-year", "year"], ["nav-compat", "compat"], ["footer-nav-compat", "compat"]].forEach(([id, tab]) => {
+[["footer-nav-year", "year"], ["footer-nav-compat", "compat"]].forEach(([id, tab]) => {
   document.getElementById(id).addEventListener("click", (e) => { e.preventDefault(); goToResultTab(tab); });
 });
-["nav-analysis", "footer-nav-analysis"].forEach((id) => {
-  document.getElementById(id).addEventListener("click", (e) => {
-    e.preventDefault();
-    if (lastResult) { document.getElementById("block-pillars").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" }); return; }
-    showFormView();
-  });
+document.getElementById("footer-nav-analysis").addEventListener("click", (e) => {
+  e.preventDefault();
+  if (lastResult) { document.getElementById("block-pillars").scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" }); return; }
+  showFormView();
+});
+
+// 로고(브랜드) 클릭 = 홈으로: 결과 화면이든 폼 화면이든 다 접고 처음 랜딩(카드 3개) 화면으로 돌아간다.
+document.querySelector(".brand-lockup").addEventListener("click", (e) => {
+  e.preventDefault();
+  resultsSection.hidden = true;
+  resultsSection.classList.remove("revealed");
+  heroSection.hidden = false;
+  showLanding();
+  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
 });
 
 // ---------- 포맷팅 헬퍼 (언어별 어순 처리) ----------
