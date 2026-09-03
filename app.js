@@ -184,6 +184,46 @@ nameInput.addEventListener("input", () => {
   nameInput.setCustomValidity(nameInput.value.trim() === "" || ok ? "" : "Please enter a valid name.");
 });
 
+// ---------- 생년월일 입력 (점(.) 포맷 텍스트 필드) ----------
+function setupDateField(displayId, hiddenId) {
+  const displayEl = document.getElementById(displayId);
+  const hiddenEl = document.getElementById(hiddenId);
+
+  function format(raw) {
+    const digits = raw.replace(/\D/g, "").slice(0, 8);
+    const parts = [digits.slice(0, 4), digits.slice(4, 6), digits.slice(6, 8)].filter(Boolean);
+    return parts.join(".");
+  }
+
+  function sync() {
+    displayEl.classList.remove("field-error");
+    const digits = displayEl.value.replace(/\D/g, "");
+    if (digits.length !== 8) {
+      hiddenEl.value = "";
+      return;
+    }
+    const y = digits.slice(0, 4);
+    const m = digits.slice(4, 6);
+    const d = digits.slice(6, 8);
+    const mm = Number(m), dd = Number(d), yy = Number(y);
+    const valid = yy >= 1900 && yy <= 2026 && mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31;
+    hiddenEl.value = valid ? `${y}-${m}-${d}` : "";
+  }
+
+  displayEl.addEventListener("input", () => {
+    const caretWasAtEnd = displayEl.selectionEnd === displayEl.value.length;
+    displayEl.value = format(displayEl.value);
+    if (caretWasAtEnd) displayEl.setSelectionRange(displayEl.value.length, displayEl.value.length);
+    sync();
+  });
+  displayEl.addEventListener("blur", sync);
+
+  return { displayEl, sync };
+}
+
+const birthDateField = setupDateField("birth-date-display", "birth-date");
+const partnerBirthDateField = setupDateField("partner-birth-date-display", "partner-birth-date");
+
 // ---------- 폼 제출 ----------
 const form = document.getElementById("saju-form");
 const resultsSection = document.getElementById("results");
@@ -199,6 +239,14 @@ form.addEventListener("submit", (e) => {
     genderToggleEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
     return;
   }
+  // type="hidden" 인풋은 브라우저 제약 검증에서 자동 제외되므로 생년월일도 직접 검사한다.
+  birthDateField.sync();
+  if (!document.getElementById("birth-date").value) {
+    birthDateField.displayEl.classList.add("field-error");
+    birthDateField.displayEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
+  partnerBirthDateField.sync();
 
   const name = nameInput.value.trim();
   const dateVal = document.getElementById("birth-date").value; // yyyy-mm-dd

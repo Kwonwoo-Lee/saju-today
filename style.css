@@ -115,6 +115,7 @@ select:focus-visible {
 .brand-mark-ring { fill: none; stroke: var(--accent); stroke-width: 1.6; opacity: 0.75; }
 .brand-mark-ring--in { stroke-dasharray: 1.5 3.5; opacity: 0.55; }
 .brand-mark-core { fill: var(--accent); }
+.brand-mark-tick { stroke: var(--accent); stroke-width: 1.4; opacity: 0.55; }
 .brand {
   font-weight: 700;
   font-size: 1.05rem;
@@ -482,6 +483,25 @@ select:focus-visible {
   box-shadow: 0 0 0 4px rgba(var(--glow-tint), 0.18);
 }
 input::placeholder { color: var(--text-muted); opacity: 0.7; }
+
+.date-input-wrap { position: relative; }
+.date-input-wrap input[type="text"] { padding-right: 42px; }
+.date-input-icon {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.date-input-wrap input.field-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(226, 121, 95, 0.18); }
+
 .hint {
   margin: 0;
   font-size: 0.78rem;
