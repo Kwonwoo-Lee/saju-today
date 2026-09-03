@@ -31,7 +31,7 @@ function applyStaticStrings(lang) {
   document.getElementById("brand-sub").textContent = s.brandSub;
   document.getElementById("hero-title-1").textContent = s.heroTitleLine1;
   document.getElementById("hero-title-2").textContent = s.heroTitleLine2;
-  document.getElementById("hero-lede").textContent = s.heroLede;
+  document.getElementById("hero-eyebrow").textContent = s.brand;
   document.getElementById("hero-form-title").textContent = s.heroFormTitle;
   document.getElementById("feature-pillars-title").textContent = s.featurePillarsTitle;
   document.getElementById("feature-pillars-body").textContent = s.featurePillarsBody;
@@ -44,7 +44,6 @@ function applyStaticStrings(lang) {
   document.getElementById("name").placeholder = s.placeholderName;
   document.getElementById("hint-name").textContent = s.hintName;
   document.getElementById("label-birth-date").textContent = s.labelBirthDate;
-  document.getElementById("hint-calendar").textContent = s.hintCalendar;
   document.getElementById("calendar-solar-btn").textContent = s.calendarSolar;
   document.getElementById("calendar-lunar-btn").textContent = s.calendarLunar;
   document.getElementById("label-gender").textContent = s.labelGender;

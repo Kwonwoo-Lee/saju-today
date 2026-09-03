@@ -175,6 +175,8 @@
 
     <div class="wrap hero-grid">
       <div class="hero-copy">
+        <p class="hero-eyebrow" id="hero-eyebrow">Saju Today</p>
+        <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2" class="hero-title-accent">calculated with real astronomy.</span></h1>
         <div class="hero-orbit" aria-hidden="true">
           <svg viewBox="0 0 320 320" class="astrolabe">
             <defs>
@@ -229,8 +231,6 @@
             </g>
           </svg>
         </div>
-        <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2" class="hero-title-accent">calculated with real astronomy.</span></h1>
-        <p class="lede" id="hero-lede">We work out the heavenly stems and earthly branches of your birth moment using true solar-term boundaries, then read today's energy against your chart.</p>
       </div>
 
       <form id="saju-form" class="hero-form" novalidate>
@@ -242,25 +242,8 @@
         </div>
 
         <div class="field">
-          <div class="time-toggle-row">
-            <label for="birth-date" id="label-birth-date">Birth date</label>
-            <div class="pill-toggle pill-toggle--sm" id="calendar-toggle" role="radiogroup" aria-label="Calendar type">
-              <button type="button" class="pill-toggle-btn is-active" data-value="solar" id="calendar-solar-btn">Solar</button>
-              <button type="button" class="pill-toggle-btn" data-value="lunar" id="calendar-lunar-btn">Lunar</button>
-            </div>
-          </div>
+          <label for="birth-date" id="label-birth-date">Birth date</label>
           <input type="date" id="birth-date" name="birth-date" required min="1900-01-01" max="2026-12-31">
-          <p class="hint" id="hint-calendar">Solar (Gregorian) calendar by default. Switch to Lunar if that's the calendar your birth date was recorded in.</p>
-        </div>
-
-        <div class="field">
-          <label id="label-gender">Gender</label>
-          <div class="pill-toggle" id="gender-toggle" role="radiogroup" aria-label="Gender">
-            <button type="button" class="pill-toggle-btn" data-value="male" id="gender-male-btn">Male</button>
-            <button type="button" class="pill-toggle-btn" data-value="female" id="gender-female-btn">Female</button>
-          </div>
-          <input type="hidden" id="gender" name="gender" required>
-          <p class="hint" id="hint-gender">Used to determine the direction of your luck cycles (Da Yun).</p>
         </div>
 
         <div class="field time-field">
@@ -280,6 +263,22 @@
             </select>
           </div>
           <p class="hint" id="hint-time">Needed for an accurate Hour Pillar. Without it, we show only the Year, Month and Day Pillars.</p>
+        </div>
+
+        <div class="field">
+          <div class="time-toggle-row">
+            <label id="label-gender">Gender</label>
+            <div class="pill-toggle pill-toggle--sm" id="calendar-toggle" role="radiogroup" aria-label="Calendar type">
+              <button type="button" class="pill-toggle-btn is-active" data-value="solar" id="calendar-solar-btn">Solar</button>
+              <button type="button" class="pill-toggle-btn" data-value="lunar" id="calendar-lunar-btn">Lunar</button>
+            </div>
+          </div>
+          <div class="pill-toggle" id="gender-toggle" role="radiogroup" aria-label="Gender">
+            <button type="button" class="pill-toggle-btn" data-value="male" id="gender-male-btn">Male</button>
+            <button type="button" class="pill-toggle-btn" data-value="female" id="gender-female-btn">Female</button>
+          </div>
+          <input type="hidden" id="gender" name="gender" required>
+          <p class="hint" id="hint-gender">Used to determine the direction of your luck cycles (Da Yun).</p>
         </div>
 
         <div class="field">
