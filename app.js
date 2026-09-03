@@ -287,11 +287,59 @@ form.addEventListener("submit", (e) => {
   lastResult = { name, saju, fortune, yearFortune, compat, hasTime, regionId };
   renderResults(currentLang, lastResult);
 
+  // 궁합 탭이 선택된 상태로 제출됐는데 상대방 정보가 없다면 오늘의 운세로 되돌린다.
+  if (activeResultTab === "compat" && !compat) activeResultTab = "today";
+  applyResultTabVisibility();
+
   resultsSection.hidden = false;
   requestAnimationFrame(() => {
     resultsSection.classList.add("revealed");
     resultsSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
   });
+});
+
+// ---------- 결과 탭 (오늘의 운세 / 신년 총운 / 궁합 따로 선택해서 보기) ----------
+let activeResultTab = "today";
+const resultBlocks = {
+  today: document.getElementById("block-today"),
+  year: document.getElementById("block-year"),
+  compat: document.getElementById("block-compat"),
+};
+const resultTabButtons = document.querySelectorAll("#result-tabs .pill-toggle-btn");
+const compatTabBtn = document.querySelector('#result-tabs [data-tab="compat"]');
+
+function applyResultTabVisibility() {
+  const hasCompat = !!(lastResult && lastResult.compat);
+  Object.entries(resultBlocks).forEach(([key, el]) => { el.hidden = key !== activeResultTab; });
+  resultTabButtons.forEach((btn) => {
+    const isActive = btn.dataset.tab === activeResultTab;
+    btn.classList.toggle("is-active", isActive);
+    btn.setAttribute("aria-selected", String(isActive));
+  });
+  compatTabBtn.classList.toggle("is-disabled", !hasCompat);
+}
+
+// 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
+// 아직 궁합 데이터가 없는 상태로 궁합을 선택하면, 빈 탭을 보여주는 대신 상대방 입력란으로 안내한다.
+function goToResultTab(tab) {
+  if (tab === "compat" && !(lastResult && lastResult.compat)) {
+    partnerToggle.checked = true;
+    partnerFields.hidden = false;
+    form.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+    document.getElementById("partner-birth-date-display").focus({ preventScroll: true });
+    return;
+  }
+  activeResultTab = tab;
+  applyResultTabVisibility();
+  (lastResult ? resultsSection : form).scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+}
+
+resultTabButtons.forEach((btn) => btn.addEventListener("click", () => goToResultTab(btn.dataset.tab)));
+document.querySelectorAll(".feature-card--clickable").forEach((card) => {
+  card.addEventListener("click", () => goToResultTab(card.dataset.tab));
+});
+[["nav-year", "year"], ["footer-nav-year", "year"], ["nav-compat", "compat"], ["footer-nav-compat", "compat"]].forEach(([id, tab]) => {
+  document.getElementById(id).addEventListener("click", (e) => { e.preventDefault(); goToResultTab(tab); });
 });
 
 // ---------- 포맷팅 헬퍼 (언어별 어순 처리) ----------
@@ -564,9 +612,7 @@ function renderYearFortune(lang, yearFortune) {
 const COMPAT_RELATION_ICON = { same: "=", generate: "→", control: "⚔" };
 
 function renderCompatibility(lang, name, compat) {
-  const block = document.getElementById("block-compat");
-  if (!compat) { block.hidden = true; return; }
-  block.hidden = false;
+  if (!compat) return; // 표시 여부는 activeResultTab 기반의 applyResultTabVisibility()가 담당한다.
 
   const s = STRINGS[lang];
   const partnerLabel = compat.partnerName || s.labelPartnerName;

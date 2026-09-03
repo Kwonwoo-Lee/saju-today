@@ -333,27 +333,27 @@
 
   <section class="features">
     <div class="wrap features-grid">
-      <div class="feature-card feature-card--today">
+      <button type="button" class="feature-card feature-card--today feature-card--clickable" data-tab="today" id="feature-today-card">
         <span class="feature-icon" aria-hidden="true">
           <svg viewBox="0 0 40 40"><rect x="7" y="7" width="26" height="26" rx="3"></rect><line x1="20" y1="7" x2="20" y2="33"></line><line x1="7" y1="20" x2="33" y2="20"></line></svg>
         </span>
         <h3 id="feature-today-title">Today's Fortune</h3>
         <p id="feature-today-body">Today's day pillar read against your day master, with wealth, love and health takes for the day.</p>
-      </div>
-      <div class="feature-card feature-card--pillars">
+      </button>
+      <button type="button" class="feature-card feature-card--pillars feature-card--clickable" data-tab="year" id="feature-year-card">
         <span class="feature-icon" aria-hidden="true">
           <svg viewBox="0 0 40 40"><line x1="4" y1="30" x2="36" y2="30"></line><path d="M10 30a10 10 0 0 1 20 0"></path><line x1="20" y1="6" x2="20" y2="12"></line><line x1="7" y1="14" x2="11" y2="17"></line><line x1="33" y1="14" x2="29" y2="17"></line></svg>
         </span>
         <h3 id="feature-pillars-title">This Year's Fortune</h3>
         <p id="feature-pillars-body">This year's pillar read against your day master, for a general read on the year ahead.</p>
-      </div>
-      <div class="feature-card feature-card--wuxing">
+      </button>
+      <button type="button" class="feature-card feature-card--wuxing feature-card--clickable" data-tab="compat" id="feature-compat-card">
         <span class="feature-icon" aria-hidden="true">
           <svg viewBox="0 0 40 40"><circle cx="15" cy="20" r="10"></circle><circle cx="25" cy="20" r="10"></circle></svg>
         </span>
         <h3 id="feature-wuxing-title">Compatibility</h3>
         <p id="feature-wuxing-body">Add a partner's birth date to see how your day masters relate: generating, controlling, or mirrored.</p>
-      </div>
+      </button>
     </div>
   </section>
 
@@ -374,7 +374,13 @@
         </div>
       </div>
 
-      <div class="result-block" id="block-today">
+      <div class="pill-toggle result-tabs" id="result-tabs" role="tablist" aria-label="Fortune type">
+        <button type="button" class="pill-toggle-btn is-active" data-tab="today" id="tab-today-btn" role="tab" aria-selected="true">Today's Fortune</button>
+        <button type="button" class="pill-toggle-btn" data-tab="year" id="tab-year-btn" role="tab" aria-selected="false">This Year's Fortune</button>
+        <button type="button" class="pill-toggle-btn" data-tab="compat" id="tab-compat-btn" role="tab" aria-selected="false">Compatibility</button>
+      </div>
+
+      <div class="result-block" id="block-today" role="tabpanel">
         <h2 class="result-title" id="today-title">Today's Fortune</h2>
         <p class="today-date" id="today-date"></p>
 
@@ -390,7 +396,7 @@
         <div class="lucky-row" id="lucky-row"></div>
       </div>
 
-      <div class="result-block" id="block-year">
+      <div class="result-block" id="block-year" role="tabpanel" hidden>
         <h2 class="result-title" id="year-title">This Year's Fortune</h2>
         <div class="today-ganji" id="year-ganji"></div>
         <div class="fortune-summary">
@@ -398,7 +404,7 @@
         </div>
       </div>
 
-      <div class="result-block" id="block-compat" hidden>
+      <div class="result-block" id="block-compat" role="tabpanel" hidden>
         <h2 class="result-title" id="compat-title">Compatibility</h2>
         <p class="correction-note" id="compat-subtitle"></p>
         <div class="compat-pair" id="compat-pair"></div>

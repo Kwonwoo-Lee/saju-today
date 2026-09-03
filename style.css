@@ -555,6 +555,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 }
 .pill-toggle--sm .pill-toggle-btn { padding: 5px 14px; font-size: 0.78rem; }
 .pill-toggle.field-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(226, 121, 95, 0.18); }
+.pill-toggle-btn.is-disabled { opacity: 0.55; }
 
 .time-selects { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 10px; }
 .time-selects select {
@@ -613,6 +614,15 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 .feature-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+.feature-card--clickable {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  appearance: none;
+}
+.feature-card--clickable:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(var(--glow-tint), 0.28); }
 /* 레퍼런스처럼 카드마다 뚜렷하게 다른, 채도 있는 배경색을 쓴다 (은은한 틴트가 아니라 진하게) */
 .feature-card--today { background: linear-gradient(160deg, #1c3a66, #0f2140 75%); border-color: rgba(90, 140, 210, 0.35); }
 .feature-card--pillars { background: linear-gradient(160deg, #2f2166, #1a1240 75%); border-color: rgba(140, 110, 220, 0.35); }
@@ -653,7 +663,9 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 #block-pillars { padding: 44px 40px 44px 0; border-right: 1px solid var(--border); }
 #block-wuxing { padding: 44px 0 44px 40px; }
 
+.result-tabs { margin: 40px 0 0; }
 .result-block { padding: 44px 0; border-top: 1px solid var(--border); }
+.result-block[hidden] { display: none; }
 .result-title { font-size: 1.3rem; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.015em; }
 .correction-note { margin: 0 0 26px; font-size: 0.85rem; color: var(--text-muted); }
 
