@@ -66,10 +66,26 @@
     <div class="hero-sky" aria-hidden="true">
       <div class="hero-stars hero-stars--a"></div>
       <div class="hero-stars hero-stars--b"></div>
+      <div class="hero-stars hero-stars--c"></div>
       <div class="nebula nebula--blue"></div>
       <div class="nebula nebula--gold"></div>
+      <div class="nebula nebula--magenta"></div>
+      <svg class="galaxy" viewBox="0 0 300 300">
+        <defs>
+          <radialGradient id="galaxy-grad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#cdb6ff" stop-opacity="0.9"></stop>
+            <stop offset="45%" stop-color="#7a5cc9" stop-opacity="0.45"></stop>
+            <stop offset="100%" stop-color="#7a5cc9" stop-opacity="0"></stop>
+          </radialGradient>
+        </defs>
+        <ellipse cx="150" cy="150" rx="140" ry="46" fill="url(#galaxy-grad)"></ellipse>
+        <ellipse cx="150" cy="150" rx="140" ry="46" fill="none" stroke="#cdb6ff" stroke-opacity="0.35" stroke-width="1"></ellipse>
+        <ellipse cx="150" cy="150" rx="95" ry="30" fill="none" stroke="#cdb6ff" stroke-opacity="0.3" stroke-width="1"></ellipse>
+        <circle cx="150" cy="150" r="10" fill="#fff" opacity="0.85"></circle>
+      </svg>
       <span class="shooting-star shooting-star--1"></span>
       <span class="shooting-star shooting-star--2"></span>
+      <span class="shooting-star shooting-star--3"></span>
       <svg class="constellation constellation--left" viewBox="0 0 160 200">
         <g class="constellation-lines">
           <line x1="20" y1="30" x2="55" y2="70"></line>
@@ -106,21 +122,56 @@
       <div class="hero-copy">
         <div class="hero-orbit" aria-hidden="true">
           <svg viewBox="0 0 320 320" class="astrolabe">
+            <defs>
+              <radialGradient id="sun-grad" cx="38%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#fff6da"></stop>
+                <stop offset="45%" stop-color="#f0c369"></stop>
+                <stop offset="100%" stop-color="#a9772c"></stop>
+              </radialGradient>
+              <radialGradient id="planet-wood" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#c9f0cf"></stop>
+                <stop offset="100%" stop-color="#3f7a49"></stop>
+              </radialGradient>
+              <radialGradient id="planet-fire" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ffcdb8"></stop>
+                <stop offset="100%" stop-color="#a8391f"></stop>
+              </radialGradient>
+              <radialGradient id="planet-earth" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ffe9b8"></stop>
+                <stop offset="100%" stop-color="#8a6a1e"></stop>
+              </radialGradient>
+              <radialGradient id="planet-metal" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#eef1f5"></stop>
+                <stop offset="100%" stop-color="#5b6572"></stop>
+              </radialGradient>
+              <radialGradient id="planet-water" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#c9def0"></stop>
+                <stop offset="100%" stop-color="#2f5478"></stop>
+              </radialGradient>
+            </defs>
+
             <ellipse class="orbit-ring orbit-ring--a" cx="160" cy="160" rx="150" ry="80"></ellipse>
             <ellipse class="orbit-ring orbit-ring--b" cx="160" cy="160" rx="118" ry="128"></ellipse>
             <g class="astrolabe-spin astrolabe-spin--slow">
               <circle class="astrolabe-ring astrolabe-ring--outer" cx="160" cy="160" r="150"></circle>
               <g class="astrolabe-ticks" id="astrolabe-ticks"></g>
             </g>
+
+            <circle class="sun-glow sun-glow--wide" cx="160" cy="160" r="60"></circle>
+            <circle class="sun-glow" cx="160" cy="160" r="38"></circle>
+            <circle class="sun-core" cx="160" cy="160" r="27" fill="url(#sun-grad)"></circle>
+            <circle class="astrolabe-core" cx="160" cy="160" r="27"></circle>
+
             <g class="astrolabe-spin astrolabe-spin--rev">
-              <circle class="astrolabe-dot" data-element="wood" cx="160" cy="48" r="6"></circle>
-              <circle class="astrolabe-dot" data-element="fire" cx="267" cy="125" r="6"></circle>
-              <circle class="astrolabe-dot" data-element="earth" cx="226" cy="251" r="6"></circle>
-              <circle class="astrolabe-dot" data-element="metal" cx="94" cy="251" r="6"></circle>
-              <circle class="astrolabe-dot" data-element="water" cx="54" cy="125" r="6"></circle>
+              <circle class="planet" data-element="wood" cx="160" cy="48" r="9" fill="url(#planet-wood)"></circle>
+              <circle class="planet" data-element="fire" cx="267" cy="125" r="8" fill="url(#planet-fire)"></circle>
+              <g class="planet-ringed" transform="translate(226,251)">
+                <ellipse rx="15" ry="5" class="planet-rings" data-element="earth"></ellipse>
+                <circle r="9" fill="url(#planet-earth)"></circle>
+              </g>
+              <circle class="planet" data-element="metal" cx="94" cy="251" r="7" fill="url(#planet-metal)"></circle>
+              <circle class="planet" data-element="water" cx="54" cy="125" r="7" fill="url(#planet-water)"></circle>
             </g>
-            <circle class="astrolabe-core-glow" cx="160" cy="160" r="34"></circle>
-            <circle class="astrolabe-core" cx="160" cy="160" r="28"></circle>
           </svg>
         </div>
         <h1><span id="hero-title-1">Your Four Pillars,</span><br><span id="hero-title-2" class="hero-title-accent">calculated with real astronomy.</span></h1>
