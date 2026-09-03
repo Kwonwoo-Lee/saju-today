@@ -44,10 +44,12 @@ function applyStaticStrings(lang) {
   document.getElementById("name").placeholder = s.placeholderName;
   document.getElementById("hint-name").textContent = s.hintName;
   document.getElementById("label-birth-date").textContent = s.labelBirthDate;
+  document.getElementById("hint-calendar").textContent = s.hintCalendar;
+  document.getElementById("calendar-solar-btn").textContent = s.calendarSolar;
+  document.getElementById("calendar-lunar-btn").textContent = s.calendarLunar;
   document.getElementById("label-gender").textContent = s.labelGender;
-  document.getElementById("option-select").textContent = s.optionSelect;
-  document.getElementById("option-male").textContent = s.optionMale;
-  document.getElementById("option-female").textContent = s.optionFemale;
+  document.getElementById("gender-male-btn").textContent = s.optionMale;
+  document.getElementById("gender-female-btn").textContent = s.optionFemale;
   document.getElementById("hint-gender").textContent = s.hintGender;
   document.getElementById("label-birth-time").textContent = s.labelBirthTime;
   document.getElementById("label-time-unknown").textContent = s.labelTimeUnknown;
@@ -85,11 +87,6 @@ function applyStaticStrings(lang) {
   document.getElementById("footer-copyright").textContent = s.footerCopyright;
 }
 
-// 로그인/전문가상담/마이페이지: 실제 페이지가 없는 자리표시자 링크라 이동하지 않는다.
-document.querySelectorAll('a[aria-disabled="true"]').forEach((a) => {
-  a.addEventListener("click", (e) => e.preventDefault());
-});
-
 // ---------- 지역 셀렉트 ----------
 function populateRegions(lang) {
   const select = document.getElementById("region");
@@ -122,14 +119,56 @@ function setLang(lang) {
 }
 langSwitch.addEventListener("change", () => setLang(langSwitch.value));
 
+// ---------- 태어난 시간 드롭다운 (시/분/오전-오후) ----------
+const hourSelect = document.getElementById("birth-hour");
+const minuteSelect = document.getElementById("birth-minute");
+const ampmSelect = document.getElementById("birth-ampm");
+for (let h = 1; h <= 12; h++) {
+  const opt = document.createElement("option");
+  opt.value = String(h);
+  opt.textContent = String(h).padStart(2, "0");
+  hourSelect.appendChild(opt);
+}
+for (let m = 0; m < 60; m++) {
+  const opt = document.createElement("option");
+  opt.value = String(m);
+  opt.textContent = String(m).padStart(2, "0");
+  minuteSelect.appendChild(opt);
+}
+hourSelect.value = "8";
+minuteSelect.value = "30";
+ampmSelect.value = "AM";
+
 // ---------- 시간 모름 토글 ----------
-const timeInput = document.getElementById("birth-time");
 const timeUnknown = document.getElementById("time-unknown");
+const timeSelectEls = [hourSelect, minuteSelect, ampmSelect];
 timeUnknown.addEventListener("change", () => {
-  timeInput.disabled = timeUnknown.checked;
-  timeInput.required = !timeUnknown.checked;
-  if (timeUnknown.checked) timeInput.value = "";
+  timeSelectEls.forEach((el) => { el.disabled = timeUnknown.checked; });
 });
+
+// ---------- 성별 필 토글 ----------
+const genderInput = document.getElementById("gender");
+const genderButtons = document.querySelectorAll("#gender-toggle .pill-toggle-btn");
+genderButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    genderButtons.forEach((b) => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    genderInput.value = btn.dataset.value;
+    document.getElementById("gender-toggle").classList.remove("field-error");
+  });
+});
+
+// ---------- 양력/음력 토글 ----------
+let calendarType = "solar";
+const calendarButtons = document.querySelectorAll("#calendar-toggle .pill-toggle-btn");
+calendarButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    calendarButtons.forEach((b) => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    calendarType = btn.dataset.value;
+  });
+});
+document.getElementById("calendar-solar-btn").classList.add("is-active");
 
 // ---------- 궁합 상대방 토글 ----------
 const partnerToggle = document.getElementById("partner-toggle");
@@ -150,22 +189,35 @@ nameInput.addEventListener("input", () => {
 const form = document.getElementById("saju-form");
 const resultsSection = document.getElementById("results");
 
+const genderToggleEl = document.getElementById("gender-toggle");
+
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   if (!form.reportValidity()) return;
+  // type="hidden" 인풋은 브라우저 제약 검증에서 자동 제외되므로 성별은 직접 검사한다.
+  if (!genderInput.value) {
+    genderToggleEl.classList.add("field-error");
+    genderToggleEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
 
   const name = nameInput.value.trim();
   const dateVal = document.getElementById("birth-date").value; // yyyy-mm-dd
-  const gender = document.getElementById("gender").value;
+  const gender = genderInput.value;
   const regionId = document.getElementById("region").value;
   const dst = document.getElementById("dst").checked;
-  const hasTime = !timeUnknown.checked && timeInput.value !== "";
+  const hasTime = !timeUnknown.checked;
 
-  const [year, month, day] = dateVal.split("-").map(Number);
+  let [year, month, day] = dateVal.split("-").map(Number);
+  if (calendarType === "lunar") {
+    const solar = Lunar.fromYmd(year, month, day).getSolar();
+    year = solar.getYear(); month = solar.getMonth(); day = solar.getDay();
+  }
+
   let hour = 12, minute = 0;
   if (hasTime) {
-    const [h, m] = timeInput.value.split(":").map(Number);
-    hour = h; minute = m;
+    hour = Number(hourSelect.value) % 12 + (ampmSelect.value === "PM" ? 12 : 0);
+    minute = Number(minuteSelect.value);
   }
 
   const region = REGIONS.find((r) => r.id === regionId) || { lng: null, utcOffset: null };

@@ -431,6 +431,8 @@ const STRINGS = {
     navAnalysis: "Saju Analysis", navYear: "This Year", navCompat: "Compatibility", navConsult: "Expert Consult", navMypage: "My Page",
     navLogin: "Log in", navSignup: "Sign up",
     footerCopyright: "© 2026 Saju Today. All rights reserved.",
+    calendarSolar: "Solar", calendarLunar: "Lunar",
+    hintCalendar: "Solar (Gregorian) calendar by default. Switch to Lunar if that's the calendar your birth date was recorded in.",
   },
   zh: {
     pageTitle: "今日八字 — 你的四柱与今日运势",
@@ -471,6 +473,8 @@ const STRINGS = {
     navAnalysis: "八字分析", navYear: "新年运势", navCompat: "姻缘合婚", navConsult: "专家咨询", navMypage: "我的页面",
     navLogin: "登录", navSignup: "注册",
     footerCopyright: "© 2026 今日八字. 保留所有权利。",
+    calendarSolar: "阳历", calendarLunar: "阴历",
+    hintCalendar: "默认按阳历（公历）计算。如果你的出生日期是按农历记录的，请切换到阴历。",
   },
   fr: {
     pageTitle: "Saju du Jour — Vos Quatre Piliers, Aujourd'hui",
@@ -511,6 +515,8 @@ const STRINGS = {
     navAnalysis: "Analyse Saju", navYear: "Cette Année", navCompat: "Compatibilité", navConsult: "Consultation Experte", navMypage: "Mon Compte",
     navLogin: "Connexion", navSignup: "S'inscrire",
     footerCopyright: "© 2026 Saju du Jour. Tous droits réservés.",
+    calendarSolar: "Solaire", calendarLunar: "Lunaire",
+    hintCalendar: "Calendrier solaire (grégorien) par défaut. Passez à Lunaire si votre date de naissance a été enregistrée selon ce calendrier.",
   },
   ko: {
     pageTitle: "사주 오늘 — 오늘의 사주팔자",
@@ -551,5 +557,7 @@ const STRINGS = {
     navAnalysis: "사주 분석", navYear: "신년 운세", navCompat: "궁합", navConsult: "전문가 상담", navMypage: "마이페이지",
     navLogin: "로그인", navSignup: "회원가입",
     footerCopyright: "© 2026 사주 오늘. All rights reserved.",
+    calendarSolar: "양력", calendarLunar: "음력",
+    hintCalendar: "기본은 양력(그레고리력)이에요. 태어난 날짜를 음력으로 알고 계시면 음력으로 바꿔주세요.",
   },
 };
