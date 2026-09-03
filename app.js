@@ -56,12 +56,39 @@ function applyStaticStrings(lang) {
   document.getElementById("hint-region").textContent = s.hintRegion;
   document.getElementById("label-dst").textContent = s.labelDST;
   document.getElementById("hint-dst").textContent = s.hintDST;
+  document.getElementById("label-partner-toggle").textContent = s.labelPartnerToggle;
+  document.getElementById("hint-partner").textContent = s.hintPartner;
+  document.getElementById("label-partner-name").textContent = s.labelPartnerName;
+  document.getElementById("partner-name").placeholder = s.placeholderPartnerName;
+  document.getElementById("label-partner-birth-date").textContent = s.labelPartnerBirthDate;
   document.getElementById("submit-btn-label").textContent = s.submitBtn;
   document.getElementById("wuxing-title").textContent = s.resultTitleWuxing;
   document.getElementById("today-title").textContent = s.resultTitleToday;
+  document.getElementById("year-title").textContent = s.resultTitleYear;
+  document.getElementById("compat-title").textContent = s.resultTitleCompat;
   document.getElementById("footer-disclaimer").textContent = s.footerDisclaimer;
   document.getElementById("lang-switch").setAttribute("aria-label", s.langLabel);
+
+  document.getElementById("nav-analysis").textContent = s.navAnalysis;
+  document.getElementById("nav-year").textContent = s.navYear;
+  document.getElementById("nav-compat").textContent = s.navCompat;
+  document.getElementById("nav-consult").textContent = s.navConsult;
+  document.getElementById("nav-mypage").textContent = s.navMypage;
+  document.getElementById("nav-login").textContent = s.navLogin;
+  document.getElementById("nav-signup").textContent = s.navSignup;
+
+  document.getElementById("footer-brand-name").textContent = s.brand;
+  document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
+  document.getElementById("footer-nav-year").textContent = s.navYear;
+  document.getElementById("footer-nav-compat").textContent = s.navCompat;
+  document.getElementById("footer-nav-consult").textContent = s.navConsult;
+  document.getElementById("footer-copyright").textContent = s.footerCopyright;
 }
+
+// 로그인/전문가상담/마이페이지: 실제 페이지가 없는 자리표시자 링크라 이동하지 않는다.
+document.querySelectorAll('a[aria-disabled="true"]').forEach((a) => {
+  a.addEventListener("click", (e) => e.preventDefault());
+});
 
 // ---------- 지역 셀렉트 ----------
 function populateRegions(lang) {
@@ -104,6 +131,13 @@ timeUnknown.addEventListener("change", () => {
   if (timeUnknown.checked) timeInput.value = "";
 });
 
+// ---------- 궁합 상대방 토글 ----------
+const partnerToggle = document.getElementById("partner-toggle");
+const partnerFields = document.getElementById("partner-fields");
+partnerToggle.addEventListener("change", () => {
+  partnerFields.hidden = !partnerToggle.checked;
+});
+
 // ---------- 이름 입력 검증 (다국어 문자 허용) ----------
 const nameInput = document.getElementById("name");
 const namePattern = /^[\p{L}][\p{L} .'\-]{0,58}$/u;
@@ -138,8 +172,20 @@ form.addEventListener("submit", (e) => {
 
   const saju = computeSaju({ year, month, day, hour, minute, hasTime, lng: region.lng, utcOffset: region.utcOffset, dst, gender });
   const fortune = computeTodayFortune(saju.dayMaster, new Date());
+  const yearFortune = computeYearFortune(saju.dayMaster, new Date().getFullYear());
 
-  lastResult = { name, saju, fortune, hasTime, regionId };
+  let compat = null;
+  if (partnerToggle.checked) {
+    const partnerDateVal = document.getElementById("partner-birth-date").value;
+    if (partnerDateVal) {
+      const partnerName = document.getElementById("partner-name").value.trim();
+      const [py, pm, pd] = partnerDateVal.split("-").map(Number);
+      const partnerSaju = computeSaju({ year: py, month: pm, day: pd, hasTime: false, lng: null, utcOffset: null, dst: false, gender: "female" });
+      compat = { partnerName, dayMasterA: saju.dayMaster, dayMasterB: partnerSaju.dayMaster, ...computeCompatibility(saju.dayMaster, partnerSaju.dayMaster) };
+    }
+  }
+
+  lastResult = { name, saju, fortune, yearFortune, compat, hasTime, regionId };
   renderResults(currentLang, lastResult);
 
   resultsSection.hidden = false;
@@ -276,11 +322,14 @@ function pillarGlyphs(lang, p) {
   if (lang === "ko") return [p.stemKo, p.branchKo];
   return [stemMeaning(lang, p.stem), BRANCH_ANIMALS[lang][p.animalIndex]];
 }
+function stemBranchGlyphText(lang, stem, branch, stemKo, branchKo, animalIndex) {
+  if (lang === "zh") return stem + branch;
+  if (lang === "ko") return stemKo + branchKo;
+  const animal = BRANCH_ANIMALS[lang][animalIndex];
+  return `${stemMeaning(lang, stem)} · ${animal}`;
+}
 function todayGlyphText(lang, fortune) {
-  if (lang === "zh") return fortune.todayStem + fortune.todayBranch;
-  if (lang === "ko") return fortune.todayStemKo + fortune.todayBranchKo;
-  const animal = BRANCH_ANIMALS[lang][fortune.todayAnimalIndex];
-  return `${stemMeaning(lang, fortune.todayStem)} · ${animal}`;
+  return stemBranchGlyphText(lang, fortune.todayStem, fortune.todayBranch, fortune.todayStemKo, fortune.todayBranchKo, fortune.todayAnimalIndex);
 }
 
 // ---------- 렌더링 ----------
@@ -378,8 +427,74 @@ function drawAstrolabeTicks() {
 }
 drawAstrolabeTicks();
 
+function yearGlyphText(lang, yf) {
+  if (lang === "zh") return yf.yearStem + yf.yearBranch;
+  if (lang === "ko") return yf.yearStemKo + yf.yearBranchKo;
+  const animal = BRANCH_ANIMALS[lang][yf.yearAnimalIndex];
+  return `${stemMeaning(lang, yf.yearStem)} · ${animal}`;
+}
+
+function formatYearGanji(lang, yf, currentYear) {
+  const animal = BRANCH_ANIMALS[lang][yf.yearAnimalIndex];
+  const godName = TEN_GOD_NAMES[lang][yf.tenGodKey];
+  if (lang === "ko") return `${currentYear}년은 ${yf.yearStemKo}${yf.yearBranchKo}년 (${animal}띠 기운) · 나와의 관계는 <strong>${godName}</strong>`;
+  if (lang === "zh") {
+    const roman = `${STEM_ROMAN[stemIndex(yf.yearStem)]}-${BRANCH_ROMAN[branchIndex(yf.yearBranch)]}`;
+    return `${currentYear}年是${roman}年（${animal}能量）· 与你的关系：<strong>${godName}</strong>`;
+  }
+  const meaning = stemMeaning(lang, yf.yearStem);
+  if (lang === "fr") return `${currentYear} est une année ${animal} (${meaning}) · votre relation avec elle : <strong>${godName}</strong>`;
+  return `${currentYear}'s animal is the ${animal} (${meaning} energy) · your relationship with it: <strong>${godName}</strong>`;
+}
+
+function dayMasterGlyphText(lang, stemHanja) {
+  if (lang === "zh") return stemHanja;
+  if (lang === "ko") return STEM_KO[stemIndex(stemHanja)];
+  return stemMeaning(lang, stemHanja);
+}
+
+function renderYearFortune(lang, yearFortune) {
+  const currentYear = new Date().getFullYear();
+  document.getElementById("year-ganji").innerHTML = `
+    <span class="pillar-glyph small ${glyphScript(lang)}" data-element="${yearFortune.yearElement}">${yearGlyphText(lang, yearFortune)}</span>
+    <span class="today-ganji-label">${formatYearGanji(lang, yearFortune, currentYear)}</span>
+  `;
+  document.getElementById("year-headline").textContent = YEAR_FORTUNE_INFO[lang][yearFortune.tenGodKey];
+}
+
+const COMPAT_RELATION_ICON = { same: "=", generate: "→", control: "⚔" };
+
+function renderCompatibility(lang, name, compat) {
+  const block = document.getElementById("block-compat");
+  if (!compat) { block.hidden = true; return; }
+  block.hidden = false;
+
+  const s = STRINGS[lang];
+  const partnerLabel = compat.partnerName || s.labelPartnerName;
+  document.getElementById("compat-subtitle").textContent = `${name} ${s.compatIntro} ${partnerLabel}`;
+
+  const script = glyphScript(lang);
+  const pair = document.getElementById("compat-pair");
+  pair.innerHTML = `
+    <div class="compat-person">
+      <span class="pillar-glyph small ${script}" data-element="${compat.elA}">${dayMasterGlyphText(lang, compat.dayMasterA)}</span>
+      <span class="compat-person-name">${name}</span>
+    </div>
+    <div class="compat-relation">
+      <span class="compat-relation-icon" aria-hidden="true">${COMPAT_RELATION_ICON[compat.relation]}</span>
+      <span class="compat-relation-label">${COMPAT_LABELS[lang][compat.relation]}</span>
+    </div>
+    <div class="compat-person">
+      <span class="pillar-glyph small ${script}" data-element="${compat.elB}">${dayMasterGlyphText(lang, compat.dayMasterB)}</span>
+      <span class="compat-person-name">${partnerLabel}</span>
+    </div>
+  `;
+
+  document.getElementById("compat-body").textContent = COMPAT_INFO[lang][compat.relation];
+}
+
 function renderResults(lang, result) {
-  const { name, saju, fortune, hasTime, regionId } = result;
+  const { name, saju, fortune, yearFortune, compat, hasTime, regionId } = result;
   const s = STRINGS[lang];
 
   document.getElementById("pillars-title").textContent = formatResultTitle(lang, name, hasTime);
@@ -429,6 +544,9 @@ function renderResults(lang, result) {
   });
 
   document.getElementById("lucky-row").innerHTML = formatLuckyRow(lang, LUCKY_COLOR_NAMES[lang][fortune.todayElement], fortune.luckyNumbers);
+
+  renderYearFortune(lang, yearFortune);
+  renderCompatibility(lang, name, compat);
 }
 
 // ---------- 초기화 ----------

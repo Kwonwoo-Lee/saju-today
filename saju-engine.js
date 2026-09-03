@@ -144,6 +144,42 @@ function computeSaju(input) {
   };
 }
 
+// 올해(양력 연도)의 연간(年干)과 본인 일간의 관계로 신년 총운을 만든다.
+// 절기 경계(입춘) 근처 왜곡을 피하려고 그 해 6월 중순을 기준일로 잡는다.
+function computeYearFortune(dayMasterHanja, year) {
+  const solar = Solar.fromYmdHms(year, 6, 15, 12, 0, 0);
+  const lunar = solar.getLunar();
+  const eightChar = lunar.getEightChar();
+  const yearGanzhi = eightChar.getYear();
+  const yearStem = yearGanzhi[0];
+  const yearBranch = yearGanzhi[1];
+
+  const god = tenGod(dayMasterHanja, yearStem);
+  const yearElement = STEM_ELEMENT[stemIndex(yearStem)];
+
+  return {
+    yearStem, yearBranch,
+    yearStemKo: STEM_KO[stemIndex(yearStem)],
+    yearBranchKo: BRANCH_KO[branchIndex(yearBranch)],
+    yearAnimalIndex: branchIndex(yearBranch),
+    tenGodKey: god,
+    yearElement,
+  };
+}
+
+// 두 사람의 일간(日干)을 오행 상생/상극/비화 관계로 비교해 궁합을 만든다.
+function computeCompatibility(dayMasterA, dayMasterB) {
+  const elA = STEM_ELEMENT[stemIndex(dayMasterA)];
+  const elB = STEM_ELEMENT[stemIndex(dayMasterB)];
+
+  let relation;
+  if (elA === elB) relation = "same";
+  else if (GENERATES[elA] === elB || GENERATES[elB] === elA) relation = "generate";
+  else relation = "control"; // CONTROLS[elA]===elB 이거나 CONTROLS[elB]===elA 인 나머지 모든 경우
+
+  return { elA, elB, relation };
+}
+
 // 오늘(또는 특정일)의 일진과 본인 일간의 관계로 오늘의 운세를 만든다.
 function computeTodayFortune(dayMasterHanja, todayDate) {
   const solar = Solar.fromDate(todayDate);

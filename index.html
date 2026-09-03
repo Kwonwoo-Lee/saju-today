@@ -46,18 +46,33 @@
 <div class="grain" aria-hidden="true"></div>
 
 <header class="site-header">
-  <div class="wrap">
-    <span class="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="brand-mark-ring"></circle><circle cx="20" cy="20" r="10" class="brand-mark-ring brand-mark-ring--in"></circle><circle cx="20" cy="20" r="3" class="brand-mark-core"></circle></svg>
-    </span>
-    <span class="brand" id="brand-name">Saju Today</span>
-    <span class="brand-sub" id="brand-sub">Four Pillars</span>
-    <select id="lang-switch" class="lang-switch" aria-label="Language">
-      <option value="en">English</option>
-      <option value="zh">中文</option>
-      <option value="fr">Français</option>
-      <option value="ko">한국어</option>
-    </select>
+  <div class="wrap site-header-row">
+    <a href="#" class="brand-lockup" aria-label="Saju Today">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="brand-mark-ring"></circle><circle cx="20" cy="20" r="10" class="brand-mark-ring brand-mark-ring--in"></circle><circle cx="20" cy="20" r="3" class="brand-mark-core"></circle></svg>
+      </span>
+      <span class="brand" id="brand-name">Saju Today</span>
+      <span class="brand-sub" id="brand-sub">Four Pillars</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#saju-form" id="nav-analysis">Saju Analysis</a>
+      <a href="#block-year" id="nav-year">This Year</a>
+      <a href="#block-compat" id="nav-compat">Compatibility</a>
+      <a href="#" id="nav-consult" aria-disabled="true">Expert Consult</a>
+      <a href="#" id="nav-mypage" aria-disabled="true">My Page</a>
+    </nav>
+
+    <div class="site-header-actions">
+      <select id="lang-switch" class="lang-switch" aria-label="Language">
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="fr">Français</option>
+        <option value="ko">한국어</option>
+      </select>
+      <a href="#" class="nav-btn nav-btn--ghost" id="nav-login" aria-disabled="true">Log in</a>
+      <a href="#saju-form" class="nav-btn nav-btn--solid" id="nav-signup">Sign up</a>
+    </div>
   </div>
 </header>
 
@@ -231,6 +246,25 @@
           <p class="hint" id="hint-dst">Check this if your birthplace was observing daylight saving time on your birth date.</p>
         </div>
 
+        <div class="field">
+          <label class="switch partner-switch">
+            <input type="checkbox" id="partner-toggle">
+            <span id="label-partner-toggle">Add a partner to check compatibility</span>
+          </label>
+          <p class="hint" id="hint-partner">We only need a birth date to find their Day Master. Time and birthplace aren't required here.</p>
+        </div>
+
+        <div class="field-row partner-fields" id="partner-fields" hidden>
+          <div class="field">
+            <label for="partner-name" id="label-partner-name">Partner's name</label>
+            <input type="text" id="partner-name" name="partner-name" placeholder="Alex Kim" maxlength="60">
+          </div>
+          <div class="field">
+            <label for="partner-birth-date" id="label-partner-birth-date">Partner's birth date</label>
+            <input type="date" id="partner-birth-date" name="partner-birth-date" min="1900-01-01" max="2026-12-31">
+          </div>
+        </div>
+
         <button type="submit" class="submit-btn">
           <span id="submit-btn-label">See My Saju</span>
         </button>
@@ -240,26 +274,26 @@
 
   <section class="features">
     <div class="wrap features-grid">
-      <div class="feature-card feature-card--pillars">
-        <span class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40"><rect x="8" y="6" width="6" height="28" rx="2"></rect><rect x="17" y="6" width="6" height="28" rx="2"></rect><rect x="26" y="6" width="6" height="28" rx="2"></rect></svg>
-        </span>
-        <h3 id="feature-pillars-title">Your Four Pillars</h3>
-        <p id="feature-pillars-body">Year, month, day and hour pillars from true solar-term calculation, shown in a script your language actually reads.</p>
-      </div>
-      <div class="feature-card feature-card--wuxing">
-        <span class="feature-icon" aria-hidden="true">
-          <svg viewBox="0 0 40 40"><polygon points="20,4 34,14 29,32 11,32 6,14"></polygon></svg>
-        </span>
-        <h3 id="feature-wuxing-title">Five-Element Balance</h3>
-        <p id="feature-wuxing-body">A radar chart of wood, fire, earth, metal and water across your chart, so you can see what's strong and what's missing.</p>
-      </div>
       <div class="feature-card feature-card--today">
         <span class="feature-icon" aria-hidden="true">
           <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="9"></circle><line x1="20" y1="2" x2="20" y2="8"></line><line x1="20" y1="32" x2="20" y2="38"></line><line x1="2" y1="20" x2="8" y2="20"></line><line x1="32" y1="20" x2="38" y2="20"></line></svg>
         </span>
         <h3 id="feature-today-title">Today's Fortune</h3>
         <p id="feature-today-body">Today's day pillar read against your day master, with wealth, love and health takes for the day.</p>
+      </div>
+      <div class="feature-card feature-card--pillars">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><line x1="4" y1="30" x2="36" y2="30"></line><path d="M10 30a10 10 0 0 1 20 0"></path><line x1="20" y1="6" x2="20" y2="12"></line><line x1="7" y1="14" x2="11" y2="17"></line><line x1="33" y1="14" x2="29" y2="17"></line></svg>
+        </span>
+        <h3 id="feature-pillars-title">This Year's Fortune</h3>
+        <p id="feature-pillars-body">This year's pillar read against your day master, for a general read on the year ahead.</p>
+      </div>
+      <div class="feature-card feature-card--wuxing">
+        <span class="feature-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><circle cx="15" cy="20" r="10"></circle><circle cx="25" cy="20" r="10"></circle></svg>
+        </span>
+        <h3 id="feature-wuxing-title">Compatibility</h3>
+        <p id="feature-wuxing-body">Add a partner's birth date to see how your day masters relate: generating, controlling, or mirrored.</p>
       </div>
     </div>
   </section>
@@ -297,6 +331,23 @@
         <div class="lucky-row" id="lucky-row"></div>
       </div>
 
+      <div class="result-block" id="block-year">
+        <h2 class="result-title" id="year-title">This Year's Fortune</h2>
+        <div class="today-ganji" id="year-ganji"></div>
+        <div class="fortune-summary">
+          <p id="year-headline"></p>
+        </div>
+      </div>
+
+      <div class="result-block" id="block-compat" hidden>
+        <h2 class="result-title" id="compat-title">Compatibility</h2>
+        <p class="correction-note" id="compat-subtitle"></p>
+        <div class="compat-pair" id="compat-pair"></div>
+        <div class="fortune-summary">
+          <p id="compat-body"></p>
+        </div>
+      </div>
+
     </div>
   </section>
 </main>
@@ -304,6 +355,23 @@
 <footer class="site-footer">
   <div class="wrap">
     <p id="footer-disclaimer">Saju Today follows traditional BaZi (Four Pillars) calendrical calculation methods. The interpretations are guidance for reflection only and are not a substitute for your own life decisions.</p>
+
+    <div class="footer-row">
+      <div class="footer-brand">
+        <p class="footer-brand-name" id="footer-brand-name">Saju Today</p>
+        <p class="footer-url">saju.tradesmrt.com</p>
+      </div>
+
+      <div class="footer-right">
+        <nav class="footer-nav" aria-label="Footer">
+          <a href="#saju-form" id="footer-nav-analysis">Saju Analysis</a>
+          <a href="#block-year" id="footer-nav-year">This Year</a>
+          <a href="#block-compat" id="footer-nav-compat">Compatibility</a>
+          <a href="#" id="footer-nav-consult" aria-disabled="true">Expert Consult</a>
+        </nav>
+        <p class="footer-copyright" id="footer-copyright">© 2026 Saju Today. All rights reserved.</p>
+      </div>
+    </div>
   </div>
 </footer>
 

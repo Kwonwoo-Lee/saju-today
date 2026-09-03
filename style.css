@@ -92,10 +92,18 @@ select:focus-visible {
   background: rgba(6, 7, 15, 0.6);
   backdrop-filter: blur(12px);
 }
-.site-header .wrap {
+.site-header-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.brand-lockup {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  flex: none;
 }
 .brand-mark { width: 28px; height: 28px; flex: none; }
 .brand-mark svg { width: 100%; height: 100%; }
@@ -112,8 +120,31 @@ select:focus-visible {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex: 1;
+}
+.site-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease);
+}
+.site-nav a:hover { color: var(--text); }
+.site-nav a[aria-disabled="true"] { cursor: default; }
+
+.site-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
 .lang-switch {
-  margin-left: auto;
   font: inherit;
   font-size: 0.85rem;
   font-weight: 600;
@@ -127,6 +158,32 @@ select:focus-visible {
 }
 .lang-switch:hover { border-color: var(--accent); }
 .lang-switch option { background: #12142a; color: var(--text); }
+
+.nav-btn {
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.15s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.nav-btn--ghost {
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: transparent;
+}
+.nav-btn--ghost:hover { border-color: var(--accent); }
+.nav-btn--solid {
+  color: #14110a;
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+}
+.nav-btn--solid:hover { transform: translateY(-1px); }
+
+/* 데스크톱 한 줄에 다 안 들어가면 nav 링크부터 숨긴다 (로그인/가입, 언어 선택은 유지) */
+@media (max-width: 980px) {
+  .site-nav { display: none; }
+}
 
 /* ---------- hero / cosmic sky ---------- */
 .hero {
@@ -459,10 +516,14 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   border: 1px solid var(--border);
   margin-bottom: 16px;
 }
-.feature-icon svg { width: 22px; height: 22px; stroke: var(--accent-strong); stroke-width: 1.6; fill: none; }
-.feature-card--pillars .feature-icon svg { fill: var(--accent-strong); stroke: none; }
-.feature-card--wuxing .feature-icon svg { fill: var(--el-wood); stroke: none; }
+.feature-icon svg { width: 22px; height: 22px; stroke: var(--accent-strong); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.feature-card--pillars .feature-icon svg { stroke: var(--accent-strong); }
+.feature-card--wuxing .feature-icon svg { stroke: #d68fd6; }
 .feature-card--today .feature-icon svg { stroke: var(--el-water); }
+.feature-card--wuxing { --tint-a: rgba(214, 143, 214, 0.14); --tint-b: rgba(214, 143, 214, 0.02); }
+
+.partner-switch { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.partner-fields { margin-top: -6px; }
 .feature-card h3 { margin: 0 0 8px; font-size: 1.02rem; letter-spacing: -0.01em; }
 .feature-card p { margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.55; }
 
@@ -585,9 +646,55 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .lucky-row { margin-top: 24px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 0.88rem; color: var(--text-muted); }
 .lucky-row strong { color: var(--text); }
 
+/* compatibility */
+#compat-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin: 8px 0 24px;
+}
+.compat-side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.compat-side .pillar-glyph { font-size: 1.5rem; }
+.compat-name { margin: 0; font-size: 0.82rem; color: var(--text-muted); max-width: 14ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.compat-link {
+  font-size: 1.5rem;
+  color: var(--accent-strong);
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  line-height: 1;
+}
+.compat-link[data-relation="control"] { color: var(--danger); }
+#compat-body strong { color: var(--accent-strong); }
+
 /* ---------- footer ---------- */
-.site-footer { border-top: 1px solid var(--border); padding: 28px 0 48px; position: relative; z-index: 1; }
+.site-footer { border-top: 1px solid var(--border); padding: 28px 0 32px; position: relative; z-index: 1; }
 .site-footer p { margin: 0; font-size: 0.78rem; color: var(--text-muted); max-width: 60ch; }
+
+.footer-row {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-brand-name { font-weight: 700; color: var(--text); font-size: 0.92rem; margin: 0 0 4px; max-width: none; }
+.footer-url { font-size: 0.8rem; margin: 0; }
+.footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.footer-nav { display: flex; gap: 18px; flex-wrap: wrap; justify-content: flex-end; }
+.footer-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.82rem; transition: color 0.2s var(--ease); }
+.footer-nav a:hover { color: var(--text); }
+.footer-copyright { font-size: 0.76rem; margin: 0; }
+
+@media (max-width: 640px) {
+  .footer-row { flex-direction: column; align-items: flex-start; }
+  .footer-right { align-items: flex-start; }
+  .footer-nav { justify-content: flex-start; }
+}
 
 /* ---------- motion ---------- */
 @media (prefers-reduced-motion: no-preference) {
