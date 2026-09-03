@@ -270,7 +270,7 @@
           <label for="birth-date" id="label-birth-date">Birth date</label>
           <div class="date-input-wrap">
             <input type="text" id="birth-date-display" inputmode="numeric" placeholder="1995.05.20" maxlength="10" autocomplete="off" required>
-            <input type="date" id="birth-date-native" class="date-native-input" tabindex="-1" aria-hidden="true" min="1900-01-01" max="2026-12-31">
+            <input type="date" id="birth-date-native" class="date-native-input" tabindex="-1" aria-label="Open calendar" min="1900-01-01" max="2026-12-31">
             <svg class="date-input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="7" y1="2.5" x2="7" y2="6"></line><line x1="17" y1="2.5" x2="17" y2="6"></line></svg>
             <input type="hidden" id="birth-date" name="birth-date">
           </div>
@@ -344,7 +344,7 @@
             <label for="partner-birth-date" id="label-partner-birth-date">Partner's birth date</label>
             <div class="date-input-wrap">
               <input type="text" id="partner-birth-date-display" inputmode="numeric" placeholder="1995.05.20" maxlength="10" autocomplete="off">
-              <input type="date" id="partner-birth-date-native" class="date-native-input" tabindex="-1" aria-hidden="true" min="1900-01-01" max="2026-12-31">
+              <input type="date" id="partner-birth-date-native" class="date-native-input" tabindex="-1" aria-label="Open calendar" min="1900-01-01" max="2026-12-31">
               <svg class="date-input-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="7" y1="2.5" x2="7" y2="6"></line><line x1="17" y1="2.5" x2="17" y2="6"></line></svg>
               <input type="hidden" id="partner-birth-date" name="partner-birth-date">
             </div>
@@ -361,6 +361,11 @@
 
   <section class="results" id="results" hidden>
     <div class="wrap">
+
+      <button type="button" class="form-back-btn results-back-btn" id="results-back-btn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+        <span id="results-back-label">Edit my info</span>
+      </button>
 
       <div class="results-top">
         <div class="result-block" id="block-pillars">

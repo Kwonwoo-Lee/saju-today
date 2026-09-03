@@ -34,6 +34,7 @@ function applyStaticStrings(lang) {
   document.getElementById("hero-eyebrow").textContent = s.brand;
   document.getElementById("hero-form-title").textContent = s.heroFormTitle;
   document.getElementById("form-back-label").textContent = s.formBack;
+  document.getElementById("results-back-label").textContent = s.resultsBack;
   document.getElementById("feature-pillars-title").textContent = s.featurePillarsTitle;
   document.getElementById("feature-pillars-body").textContent = s.featurePillarsBody;
   document.getElementById("feature-wuxing-title").textContent = s.featureWuxingTitle;
@@ -183,7 +184,7 @@ nameInput.addEventListener("input", () => {
   nameInput.setCustomValidity(nameInput.value.trim() === "" || ok ? "" : "Please enter a valid name.");
 });
 
-// ---------- 생년월일 입력 (점(.) 포맷 텍스트 필드) ----------
+// ---------- 생년월일 입력 (점(.) 포맷 텍스트란 직접 입력 + 달력 아이콘 클릭, 둘 다 동작) ----------
 function setupDateField(displayId, hiddenId, nativeId) {
   const displayEl = document.getElementById(displayId);
   const hiddenEl = document.getElementById(hiddenId);
@@ -208,8 +209,11 @@ function setupDateField(displayId, hiddenId, nativeId) {
     const mm = Number(m), dd = Number(d), yy = Number(y);
     const valid = yy >= 1900 && yy <= 2026 && mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31;
     hiddenEl.value = valid ? `${y}-${m}-${d}` : "";
+    // 달력 버튼을 다시 열었을 때 방금 타이핑한 날짜에서 시작하도록 네이티브 입력도 맞춰둔다.
+    if (nativeEl) nativeEl.value = valid ? `${y}-${m}-${d}` : "";
   }
 
+  // 키보드 직접 입력: 텍스트란은 달력 버튼과 완전히 분리된 별도 요소라 서로 방해하지 않는다.
   displayEl.addEventListener("input", () => {
     const caretWasAtEnd = displayEl.selectionEnd === displayEl.value.length;
     displayEl.value = format(displayEl.value);
@@ -218,14 +222,9 @@ function setupDateField(displayId, hiddenId, nativeId) {
   });
   displayEl.addEventListener("blur", sync);
 
-  // 달력 아이콘 자리에 투명하게 얹힌 네이티브 date input. 클릭하면 실제 달력이 뜨고,
-  // 날짜를 고르면 점(.) 포맷 텍스트란과 숨김 필드에 그대로 반영된다.
+  // 달력 아이콘 자리의 네이티브 date input을 직접 클릭하면 브라우저 기본 달력이 뜬다.
+  // 날짜를 고르면 change 이벤트로 점(.) 포맷 텍스트란과 숨김 필드에 그대로 반영된다.
   if (nativeEl) {
-    nativeEl.addEventListener("click", () => {
-      if (typeof nativeEl.showPicker === "function") {
-        try { nativeEl.showPicker(); } catch (e) { /* 사용자 제스처 밖 등에서는 조용히 무시 */ }
-      }
-    });
     nativeEl.addEventListener("change", () => {
       if (!nativeEl.value) return;
       const [y, m, d] = nativeEl.value.split("-");
@@ -307,11 +306,7 @@ form.addEventListener("submit", (e) => {
   if (activeResultTab === "compat" && !compat) activeResultTab = "today";
   applyResultTabVisibility();
 
-  resultsSection.hidden = false;
-  requestAnimationFrame(() => {
-    resultsSection.classList.add("revealed");
-    resultsSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
-  });
+  showResultsView();
 });
 
 // ---------- 결과 탭 (오늘의 운세 / 신년 총운 / 궁합 따로 선택해서 보기) ----------
@@ -358,6 +353,28 @@ function showFormView(tab) {
   heroFormWrap.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
 }
 formBackBtn.addEventListener("click", showLanding);
+
+// ---------- 입력 화면 → 결과 화면 전환 ----------
+// 결과는 입력 폼 아래에 이어붙이지 않고, 히어로(랜딩/폼) 전체를 감추고 결과만 보이는
+// 별도 화면으로 전환한다. "정보 수정" 버튼을 누르면 입력했던 값 그대로 폼 화면으로 되돌아간다.
+const heroSection = document.querySelector(".hero");
+const resultsBackBtn = document.getElementById("results-back-btn");
+
+function showResultsView() {
+  heroSection.hidden = true;
+  resultsSection.hidden = false;
+  requestAnimationFrame(() => {
+    resultsSection.classList.add("revealed");
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  });
+}
+function hideResultsView() {
+  resultsSection.hidden = true;
+  resultsSection.classList.remove("revealed");
+  heroSection.hidden = false;
+  showFormView(activeResultTab);
+}
+resultsBackBtn.addEventListener("click", hideResultsView);
 
 // 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
 // 아직 사주 계산 전이면 해당 탭에 맞는 입력 폼을 열고, 궁합인데 상대방 정보가 없다면

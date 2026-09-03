@@ -389,6 +389,7 @@ select:focus-visible {
 }
 .form-back-btn:hover { color: var(--text); }
 .form-back-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.results-back-btn { margin: 28px 0 0; }
 
 .hero-eyebrow {
   margin: 0 0 10px;
@@ -520,20 +521,22 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   pointer-events: none;
 }
 .date-input-wrap input.field-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(226, 121, 95, 0.18); }
-/* 달력 아이콘 위에 얹힌, 실제로 클릭하면 네이티브 달력이 뜨는 투명 date input.
-   너비를 아이콘 근처로만 좁혀서, 나머지 영역은 계속 직접 타이핑에 쓸 수 있게 한다. */
+/* 달력 아이콘 자리에 투명하게 얹힌, 실제 클릭하면 브라우저 기본 달력이 뜨는 date input.
+   아이콘 폭 정도로만 좁혀서, 나머지 영역은 계속 직접 타이핑에 쓸 수 있게 한다.
+   (JS의 showPicker() 호출 방식은 일부 환경에서 사용자 제스처로 인정되지 않아,
+   input 자체를 클릭 대상으로 두는 이 방식이 가장 안정적으로 동작한다.) */
 .date-native-input {
-  position: absolute;
-  right: 6px;
-  top: 0;
-  width: 28px;
-  height: 100%;
-  opacity: 0;
+  position: absolute !important;
+  right: 4px !important;
+  top: 0 !important;
+  width: 26px !important;
+  height: 100% !important;
+  opacity: 0 !important;
   z-index: 1;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
   cursor: pointer;
 }
 
@@ -682,7 +685,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 
 /* ---------- results ---------- */
 .results {
-  padding: 8px 0 88px;
+  padding: 40px 0 88px;
   opacity: 0;
   position: relative;
   z-index: 1;
