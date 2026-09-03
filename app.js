@@ -67,6 +67,9 @@ function applyStaticStrings(lang) {
   document.getElementById("today-title").textContent = s.resultTitleToday;
   document.getElementById("year-title").textContent = s.resultTitleYear;
   document.getElementById("compat-title").textContent = s.resultTitleCompat;
+  document.getElementById("tab-today-btn").textContent = s.resultTitleToday;
+  document.getElementById("tab-year-btn").textContent = s.resultTitleYear;
+  document.getElementById("tab-compat-btn").textContent = s.resultTitleCompat;
   document.getElementById("footer-disclaimer").textContent = s.footerDisclaimer;
   document.getElementById("lang-switch").setAttribute("aria-label", s.langLabel);
 
