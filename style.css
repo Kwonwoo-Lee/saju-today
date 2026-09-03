@@ -320,6 +320,56 @@ select:focus-visible {
 .constellation-lines line { stroke: #cdd3f5; stroke-width: 0.9; opacity: 0.65; }
 .constellation-stars circle { fill: #fff; filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8)); }
 
+/* 사신(四神) 배경 장식 문자 — 정보가 아니라 순수 무드 장식이라 언어 설정과 무관하게 항상 보인다 */
+.myth-glyph {
+  position: absolute;
+  font-family: var(--font-hanja);
+  font-weight: 700;
+  font-size: clamp(64px, 9vw, 116px);
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.1;
+  pointer-events: none;
+  user-select: none;
+}
+.myth-glyph--dragon { top: 10%; left: 6%; color: var(--el-wood); }
+.myth-glyph--tiger { top: 6%; right: 9%; color: var(--text); }
+.myth-glyph--phoenix { top: 46%; right: 3%; color: var(--el-fire); }
+.myth-glyph--tortoise { bottom: 6%; left: 4%; color: var(--el-water); }
+
+/* 12지지 원형 휠, 우측 하단에 걸쳐서 배치 */
+.zodiac-wheel {
+  position: absolute;
+  bottom: -110px;
+  right: -90px;
+  width: 380px;
+  height: 380px;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .zodiac-wheel { animation: spin-cw 200s linear infinite; transform-origin: 150px 150px; }
+}
+.zodiac-ring { fill: none; stroke: var(--border); }
+.zodiac-ring--outer { stroke-width: 1.4; }
+.zodiac-ring--inner { stroke-width: 1; stroke-dasharray: 1.5 5; }
+.zodiac-ticks line { stroke: var(--accent); stroke-width: 1.2; opacity: 0.6; }
+.zodiac-labels text {
+  font-family: var(--font-hanja);
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--accent-strong);
+  text-anchor: middle;
+  opacity: 0.85;
+}
+
+@media (max-width: 980px) {
+  .myth-glyph { font-size: 56px; opacity: 0.08; }
+  .zodiac-wheel { width: 260px; height: 260px; bottom: -70px; right: -60px; opacity: 0.35; }
+}
+@media (max-width: 640px) {
+  .myth-glyph--phoenix, .myth-glyph--tortoise { display: none; }
+}
+
 /* ---------- hero content ---------- */
 .hero-grid {
   position: relative;
