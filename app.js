@@ -5,6 +5,7 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 
 let currentLang = DEFAULT_LANG;
 let lastResult = null; // 언어 전환 시 재렌더링을 위해 마지막 계산 결과를 보관
+let lastCompatResult = null; // 궁합은 본인 사주와 별개로 두 사람 정보만으로 계산되므로 따로 보관
 
 function getStoredLang() {
   try {
@@ -59,12 +60,18 @@ function applyStaticStrings(lang) {
   document.getElementById("hint-region").textContent = s.hintRegion;
   document.getElementById("label-dst").textContent = s.labelDST;
   document.getElementById("hint-dst").textContent = s.hintDST;
-  document.getElementById("label-partner-toggle").textContent = s.labelPartnerToggle;
-  document.getElementById("hint-partner").textContent = s.hintPartner;
-  document.getElementById("label-partner-name").textContent = s.labelPartnerName;
-  document.getElementById("partner-name").placeholder = s.placeholderPartnerName;
-  document.getElementById("label-partner-birth-date").textContent = s.labelPartnerBirthDate;
   document.getElementById("submit-btn-label").textContent = s.submitBtn;
+  document.getElementById("compat-form-title").textContent = s.compatFormTitle;
+  document.getElementById("compat-form-back-label").textContent = s.formBack;
+  document.getElementById("label-compat-name-a").textContent = s.labelCompatNameA;
+  document.getElementById("compat-name-a").placeholder = s.placeholderName;
+  document.getElementById("label-compat-date-a").textContent = s.labelCompatDateA;
+  document.getElementById("label-compat-name-b").textContent = s.labelPartnerName;
+  document.getElementById("compat-name-b").placeholder = s.placeholderPartnerName;
+  document.getElementById("label-compat-date-b").textContent = s.labelPartnerBirthDate;
+  document.getElementById("hint-compat-form").textContent = s.hintCompatForm;
+  document.getElementById("compat-submit-btn-label").textContent = s.compatSubmitBtn;
+  document.getElementById("compat-score-kicker").textContent = s.compatScoreKicker;
   document.getElementById("wuxing-title").textContent = s.resultTitleWuxing;
   document.getElementById("today-title").textContent = s.resultTitleToday;
   document.getElementById("year-title").textContent = s.resultTitleYear;
@@ -111,6 +118,7 @@ function setLang(lang) {
   applyStaticStrings(lang);
   populateRegions(lang);
   if (lastResult) renderResults(lang, lastResult);
+  if (lastCompatResult) renderCompatibility(lang, lastCompatResult);
 }
 langSwitch.addEventListener("change", () => setLang(langSwitch.value));
 
@@ -165,20 +173,19 @@ calendarButtons.forEach((btn) => {
 });
 document.getElementById("calendar-solar-btn").classList.add("is-active");
 
-// ---------- 궁합 상대방 토글 ----------
-const partnerToggle = document.getElementById("partner-toggle");
-const partnerFields = document.getElementById("partner-fields");
-partnerToggle.addEventListener("change", () => {
-  partnerFields.hidden = !partnerToggle.checked;
-});
-
 // ---------- 이름 입력 검증 (다국어 문자 허용) ----------
-const nameInput = document.getElementById("name");
 const namePattern = /^[\p{L}][\p{L} .'\-]{0,58}$/u;
-nameInput.addEventListener("input", () => {
-  const ok = namePattern.test(nameInput.value.trim());
-  nameInput.setCustomValidity(nameInput.value.trim() === "" || ok ? "" : "Please enter a valid name.");
-});
+function setupNameValidation(id) {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => {
+    const ok = namePattern.test(el.value.trim());
+    el.setCustomValidity(el.value.trim() === "" || ok ? "" : "Please enter a valid name.");
+  });
+}
+const nameInput = document.getElementById("name");
+setupNameValidation("name");
+setupNameValidation("compat-name-a");
+setupNameValidation("compat-name-b");
 
 // ---------- 생년월일 입력 (점(.) 포맷 텍스트란 직접 입력 + 달력 아이콘 클릭, 둘 다 동작) ----------
 function setupDateField(displayId, hiddenId, nativeId) {
@@ -233,7 +240,8 @@ function setupDateField(displayId, hiddenId, nativeId) {
 }
 
 const birthDateField = setupDateField("birth-date-display", "birth-date", "birth-date-native");
-const partnerBirthDateField = setupDateField("partner-birth-date-display", "partner-birth-date", "partner-birth-date-native");
+const compatDateAField = setupDateField("compat-date-a-display", "compat-date-a", "compat-date-a-native");
+const compatDateBField = setupDateField("compat-date-b-display", "compat-date-b", "compat-date-b-native");
 
 // ---------- 폼 제출 ----------
 const form = document.getElementById("saju-form");
@@ -257,7 +265,6 @@ form.addEventListener("submit", (e) => {
     birthDateField.displayEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
     return;
   }
-  partnerBirthDateField.sync();
 
   const name = nameInput.value.trim();
   const dateVal = document.getElementById("birth-date").value; // yyyy-mm-dd
@@ -284,24 +291,48 @@ form.addEventListener("submit", (e) => {
   const fortune = computeTodayFortune(saju.dayMaster, new Date());
   const yearFortune = computeYearFortune(saju.dayMaster, new Date().getFullYear());
 
-  let compat = null;
-  if (partnerToggle.checked) {
-    const partnerDateVal = document.getElementById("partner-birth-date").value;
-    if (partnerDateVal) {
-      const partnerName = document.getElementById("partner-name").value.trim();
-      const [py, pm, pd] = partnerDateVal.split("-").map(Number);
-      const partnerSaju = computeSaju({ year: py, month: pm, day: pd, hasTime: false, lng: null, utcOffset: null, dst: false, gender: "female" });
-      compat = { partnerName, dayMasterA: saju.dayMaster, dayMasterB: partnerSaju.dayMaster, ...computeCompatibility(saju.dayMaster, partnerSaju.dayMaster) };
-    }
-  }
-
-  lastResult = { name, saju, fortune, yearFortune, compat, hasTime, regionId };
+  lastResult = { name, saju, fortune, yearFortune, hasTime, regionId };
   renderResults(currentLang, lastResult);
 
-  // 궁합 탭이 선택된 상태로 제출됐는데 상대방 정보가 없다면 오늘의 운세로 되돌린다.
-  if (activeResultTab === "compat" && !compat) activeResultTab = "today";
   applyResultTabVisibility();
+  showResultsView();
+});
 
+// ---------- 궁합 폼 제출 (본인 사주와 별개로, 두 사람의 이름+생년월일만 받는다) ----------
+const compatForm = document.getElementById("compat-form");
+
+compatForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!compatForm.reportValidity()) return;
+  // type="hidden" 인풋은 브라우저 제약 검증에서 자동 제외되므로 두 생년월일도 직접 검사한다.
+  compatDateAField.sync();
+  if (!document.getElementById("compat-date-a").value) {
+    compatDateAField.displayEl.classList.add("field-error");
+    compatDateAField.displayEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
+  compatDateBField.sync();
+  if (!document.getElementById("compat-date-b").value) {
+    compatDateBField.displayEl.classList.add("field-error");
+    compatDateBField.displayEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
+
+  const nameA = document.getElementById("compat-name-a").value.trim();
+  const nameB = document.getElementById("compat-name-b").value.trim();
+  const [ya, ma, da] = document.getElementById("compat-date-a").value.split("-").map(Number);
+  const [yb, mb, db] = document.getElementById("compat-date-b").value.split("-").map(Number);
+
+  // 궁합은 일간(日干)만 있으면 계산할 수 있어 시간/지역 보정 없이 날짜만으로 구한다.
+  const sajuA = computeSaju({ year: ya, month: ma, day: da, hasTime: false, lng: null, utcOffset: null, dst: false, gender: "female" });
+  const sajuB = computeSaju({ year: yb, month: mb, day: db, hasTime: false, lng: null, utcOffset: null, dst: false, gender: "female" });
+  const compat = computeCompatibility(sajuA.dayMaster, sajuB.dayMaster);
+
+  lastCompatResult = { nameA, nameB, dayMasterA: sajuA.dayMaster, dayMasterB: sajuB.dayMaster, ...compat };
+  renderCompatibility(currentLang, lastCompatResult);
+
+  activeResultTab = "compat";
+  applyResultTabVisibility();
   showResultsView();
 });
 
@@ -313,47 +344,69 @@ const resultBlocks = {
   compat: document.getElementById("block-compat"),
 };
 const resultTabButtons = document.querySelectorAll("#result-tabs .pill-toggle-btn");
+const todayTabBtn = document.querySelector('#result-tabs [data-tab="today"]');
+const yearTabBtn = document.querySelector('#result-tabs [data-tab="year"]');
 const compatTabBtn = document.querySelector('#result-tabs [data-tab="compat"]');
+const resultsTopEl = document.getElementById("results-top");
 
+// 오늘/신년 운세는 본인 사주(lastResult)가, 궁합은 별도의 두 사람 정보(lastCompatResult)가 있어야 보여줄 수 있다.
+// 본인 사주를 아직 계산하지 않았다면 사주팔자/오행 패널과 오늘·신년 탭 자체를 숨긴다.
 function applyResultTabVisibility() {
-  const hasCompat = !!(lastResult && lastResult.compat);
+  const hasSelf = !!lastResult;
+  const hasCompat = !!lastCompatResult;
+  resultsTopEl.hidden = !hasSelf;
   Object.entries(resultBlocks).forEach(([key, el]) => { el.hidden = key !== activeResultTab; });
   resultTabButtons.forEach((btn) => {
     const isActive = btn.dataset.tab === activeResultTab;
     btn.classList.toggle("is-active", isActive);
     btn.setAttribute("aria-selected", String(isActive));
   });
+  todayTabBtn.classList.toggle("is-disabled", !hasSelf);
+  yearTabBtn.classList.toggle("is-disabled", !hasSelf);
   compatTabBtn.classList.toggle("is-disabled", !hasCompat);
 }
 
 // ---------- 랜딩(카드 선택) / 입력 폼 화면 전환 ----------
 // 처음엔 입력 칸 없이 카드 3개만 보여주고, 카드를 누르면 그때 해당 운세용 입력 폼으로 들어간다.
+// 궁합은 본인 정보 폼과 완전히 별개인 전용 폼(두 사람의 이름+생년월일)을 사용한다.
 const heroGrid = document.getElementById("hero-grid");
 const heroFormWrap = document.getElementById("hero-form-wrap");
+const compatFormWrap = document.getElementById("compat-form-wrap");
 const formBackBtn = document.getElementById("form-back-btn");
+const compatFormBackBtn = document.getElementById("compat-form-back-btn");
+const heroSection = document.querySelector(".hero");
 
 function showLanding() {
+  heroSection.hidden = false;
+  resultsSection.hidden = true;
+  resultsSection.classList.remove("revealed");
   heroGrid.classList.add("is-landing");
   heroFormWrap.hidden = true;
+  compatFormWrap.hidden = true;
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 }
+// 카드/탭/내비게이션 어디서 불러도 항상 같은 방식으로 입력 폼 화면을 연다: 결과 화면이 떠
+// 있었다면 접고(히어로를 다시 보이고), 궁합 탭이면 궁합 전용 폼을, 아니면 본인 정보 폼을 연다.
 function showFormView(tab) {
+  heroSection.hidden = false;
+  resultsSection.hidden = true;
+  resultsSection.classList.remove("revealed");
   heroGrid.classList.remove("is-landing");
-  heroFormWrap.hidden = false;
-  if (tab === "compat") {
-    partnerToggle.checked = true;
-    partnerFields.hidden = false;
-  }
+  const isCompat = tab === "compat";
+  heroFormWrap.hidden = isCompat;
+  compatFormWrap.hidden = !isCompat;
   if (tab) activeResultTab = tab;
   history.replaceState(null, "", "#" + (tab || "form"));
-  heroFormWrap.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+  const wrap = isCompat ? compatFormWrap : heroFormWrap;
+  wrap.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+  if (isCompat) document.getElementById("compat-name-a").focus({ preventScroll: true });
 }
 formBackBtn.addEventListener("click", showLanding);
+compatFormBackBtn.addEventListener("click", showLanding);
 
 // ---------- 입력 화면 → 결과 화면 전환 ----------
 // 결과는 입력 폼 아래에 이어붙이지 않고, 히어로(랜딩/폼) 전체를 감추고 결과만 보이는
 // 별도 화면으로 전환한다. "정보 수정" 버튼을 누르면 입력했던 값 그대로 폼 화면으로 되돌아간다.
-const heroSection = document.querySelector(".hero");
 const resultsBackBtn = document.getElementById("results-back-btn");
 
 function showResultsView() {
@@ -365,23 +418,15 @@ function showResultsView() {
   });
 }
 function hideResultsView() {
-  resultsSection.hidden = true;
-  resultsSection.classList.remove("revealed");
-  heroSection.hidden = false;
   showFormView(activeResultTab);
 }
 resultsBackBtn.addEventListener("click", hideResultsView);
 
 // 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
-// 아직 사주 계산 전이면 해당 탭에 맞는 입력 폼을 열고, 궁합인데 상대방 정보가 없다면
-// 빈 탭을 보여주는 대신 상대방 입력란으로 안내한다.
+// 해당 탭에 필요한 데이터(본인 사주 또는 궁합 정보)가 아직 없으면 알맞은 입력 폼을 연다.
 function goToResultTab(tab) {
-  if (tab === "compat" && !(lastResult && lastResult.compat)) {
-    showFormView("compat");
-    document.getElementById("partner-birth-date-display").focus({ preventScroll: true });
-    return;
-  }
-  if (!lastResult) {
+  const hasData = tab === "compat" ? !!lastCompatResult : !!lastResult;
+  if (!hasData) {
     showFormView(tab);
     return;
   }
@@ -410,9 +455,6 @@ document.getElementById("footer-nav-analysis").addEventListener("click", (e) => 
 // 로고(브랜드) 클릭 = 홈으로: 결과 화면이든 폼 화면이든 다 접고 처음 랜딩(카드 3개) 화면으로 돌아간다.
 document.querySelector(".brand-lockup").addEventListener("click", (e) => {
   e.preventDefault();
-  resultsSection.hidden = true;
-  resultsSection.classList.remove("revealed");
-  heroSection.hidden = false;
   showLanding();
   window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
 });
@@ -685,36 +727,50 @@ function renderYearFortune(lang, yearFortune) {
 }
 
 const COMPAT_RELATION_ICON = { same: "=", generate: "→", control: "⚔" };
+// 점수 구간별 한줄 평가. 배열 순서대로 점수 이상인 첫 구간을 채택한다.
+const COMPAT_TIERS = [[85, "compatTierExcellent"], [70, "compatTierGood"], [55, "compatTierFair"], [0, "compatTierChallenging"]];
+function compatTierLabel(lang, score) {
+  const [, key] = COMPAT_TIERS.find(([min]) => score >= min);
+  return STRINGS[lang][key];
+}
 
-function renderCompatibility(lang, name, compat) {
+// 점수 원형 게이지: SVG 원(r=52) 둘레를 stroke-dasharray/offset으로 채워 넣는다.
+const COMPAT_SCORE_CIRC = 2 * Math.PI * 52;
+
+function renderCompatibility(lang, compat) {
   if (!compat) return; // 표시 여부는 activeResultTab 기반의 applyResultTabVisibility()가 담당한다.
 
   const s = STRINGS[lang];
-  const partnerLabel = compat.partnerName || s.labelPartnerName;
-  document.getElementById("compat-subtitle").textContent = `${name} ${s.compatIntro} ${partnerLabel}`;
+  document.getElementById("compat-subtitle").textContent = `${compat.nameA} ${s.compatIntro} ${compat.nameB}`;
 
   const script = glyphScript(lang);
   const pair = document.getElementById("compat-pair");
   pair.innerHTML = `
     <div class="compat-person">
       <span class="pillar-glyph small ${script}" data-element="${compat.elA}">${dayMasterGlyphText(lang, compat.dayMasterA)}</span>
-      <span class="compat-person-name">${name}</span>
+      <span class="compat-person-name">${compat.nameA}</span>
     </div>
     <div class="compat-relation">
       <span class="compat-relation-icon" aria-hidden="true">${COMPAT_RELATION_ICON[compat.relation]}</span>
-      <span class="compat-relation-label">${COMPAT_LABELS[lang][compat.relation]}</span>
+      <span class="compat-relation-label">${TEN_GOD_NAMES[lang][compat.tenGodKey]}</span>
     </div>
     <div class="compat-person">
       <span class="pillar-glyph small ${script}" data-element="${compat.elB}">${dayMasterGlyphText(lang, compat.dayMasterB)}</span>
-      <span class="compat-person-name">${partnerLabel}</span>
+      <span class="compat-person-name">${compat.nameB}</span>
     </div>
   `;
 
-  document.getElementById("compat-body").textContent = COMPAT_INFO[lang][compat.relation];
+  document.getElementById("compat-score-value").textContent = `${compat.score}%`;
+  document.getElementById("compat-score-relation").textContent = compatTierLabel(lang, compat.score);
+  const arc = document.getElementById("compat-score-arc");
+  arc.style.strokeDasharray = `${COMPAT_SCORE_CIRC}`;
+  arc.style.strokeDashoffset = `${COMPAT_SCORE_CIRC * (1 - compat.score / 100)}`;
+
+  document.getElementById("compat-body").textContent = COMPAT_TEN_GOD_INFO[lang][compat.tenGodKey];
 }
 
 function renderResults(lang, result) {
-  const { name, saju, fortune, yearFortune, compat, hasTime, regionId } = result;
+  const { name, saju, fortune, yearFortune, hasTime, regionId } = result;
   const s = STRINGS[lang];
 
   document.getElementById("pillars-title").textContent = formatResultTitle(lang, name, hasTime);
@@ -766,7 +822,6 @@ function renderResults(lang, result) {
   document.getElementById("lucky-row").innerHTML = formatLuckyRow(lang, LUCKY_COLOR_NAMES[lang][fortune.todayElement], fortune.luckyNumbers);
 
   renderYearFortune(lang, yearFortune);
-  renderCompatibility(lang, name, compat);
 }
 
 // ---------- 초기화 ----------

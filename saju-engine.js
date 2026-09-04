@@ -167,7 +167,16 @@ function computeYearFortune(dayMasterHanja, year) {
   };
 }
 
-// 두 사람의 일간(日干)을 오행 상생/상극/비화 관계로 비교해 궁합을 만든다.
+// 십성(十神)별 궁합 점수(0~100). 명리학 전통에서 배우자 궁합에 특히 좋게 보는
+// 정관/정재(반듯한 배우자 자리) 쪽을 높게, 겁재/칠살(경쟁·긴장) 쪽을 낮게 잡았다.
+const COMPAT_SCORE = {
+  zhengGuan: 94, zhengCai: 92, shiShen: 86, zhengYin: 84, pianCai: 78,
+  biJian: 74, pianYin: 70, shangGuan: 64, qiSha: 58, jieCai: 50,
+};
+
+// 두 사람의 일간(日干)을 오행 상생/상극/비화 관계 + 십성(十神) 관계로 비교해 궁합을 만든다.
+// tenGodKey는 B의 일간이 A의 일간을 기준으로 어떤 십성에 해당하는지를 나타내며,
+// 점수와 상세 해설은 이 십성을 기준으로 한다.
 function computeCompatibility(dayMasterA, dayMasterB) {
   const elA = STEM_ELEMENT[stemIndex(dayMasterA)];
   const elB = STEM_ELEMENT[stemIndex(dayMasterB)];
@@ -177,7 +186,10 @@ function computeCompatibility(dayMasterA, dayMasterB) {
   else if (GENERATES[elA] === elB || GENERATES[elB] === elA) relation = "generate";
   else relation = "control"; // CONTROLS[elA]===elB 이거나 CONTROLS[elB]===elA 인 나머지 모든 경우
 
-  return { elA, elB, relation };
+  const tenGodKey = tenGod(dayMasterA, dayMasterB);
+  const score = COMPAT_SCORE[tenGodKey] || 70;
+
+  return { elA, elB, relation, tenGodKey, score };
 }
 
 // 오늘(또는 특정일)의 일진과 본인 일간의 관계로 오늘의 운세를 만든다.

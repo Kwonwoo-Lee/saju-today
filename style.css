@@ -368,7 +368,9 @@ select:focus-visible {
 }
 .form-back-btn:hover { color: var(--text); }
 .form-back-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.results-back-btn { margin: 28px 0 0; }
+/* form-back-btn은 inline-flex라 옆에 있던 .results-top이 숨겨지면(궁합만 본 경우)
+   바로 뒤의 결과 탭(마찬가지로 inline-flex)과 한 줄에 붙어버린다. 항상 줄바꿈되게 고정한다. */
+.results-back-btn { display: flex; margin: 28px 0 28px; }
 
 .hero-eyebrow {
   margin: 0 0 10px;
@@ -792,19 +794,59 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   gap: 24px;
   margin: 8px 0 24px;
 }
-.compat-side { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-.compat-side .pillar-glyph { font-size: 1.5rem; }
-.compat-name { margin: 0; font-size: 0.82rem; color: var(--text-muted); max-width: 14ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.compat-link {
-  font-size: 1.5rem;
+.compat-person { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.compat-person .pillar-glyph { font-size: 1.5rem; }
+.compat-person-name { margin: 0; font-size: 0.82rem; color: var(--text-muted); max-width: 14ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.compat-relation { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.compat-relation-icon {
+  font-size: 1.3rem;
   color: var(--accent-strong);
-  padding: 6px 10px;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border);
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   line-height: 1;
 }
-.compat-link[data-relation="control"] { color: var(--danger); }
+.compat-relation-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
 #compat-body strong { color: var(--accent-strong); }
+
+/* 궁합 점수 원형 게이지 */
+.compat-score-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 0 0 28px;
+  padding: 22px 26px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.compat-score-ring { position: relative; width: 108px; height: 108px; flex: none; }
+.compat-score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.compat-score-track { fill: none; stroke: var(--border); stroke-width: 9; }
+.compat-score-arc {
+  fill: none;
+  stroke: var(--accent-strong);
+  stroke-width: 9;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--ease);
+}
+.compat-score-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.compat-score-copy { display: flex; flex-direction: column; gap: 4px; }
+.compat-score-kicker { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
+.compat-score-relation { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--accent-strong); }
 
 /* ---------- footer ---------- */
 .site-footer { border-top: 1px solid var(--border); padding: 28px 0 32px; position: relative; z-index: 1; }
