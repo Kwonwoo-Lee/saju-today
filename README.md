@@ -13,6 +13,21 @@
 
 빌드 도구 없이 순수 HTML/CSS/JS로 동작합니다.
 
+## 다국어 페이지 (en/zh/fr/ko)
+
+`index.html`(영어)과 `i18n.js`가 유일한 원본입니다. `/zh/index.html`, `/fr/index.html`,
+`/ko/index.html`은 검색엔진이 언어별로 따로 색인할 수 있도록 **미리 렌더링해서 커밋해둔
+정적 파일**이며, 직접 손으로 고치면 안 됩니다.
+
+```bash
+npm run build:lang   # index.html + i18n.js -> zh/fr/ko/index.html 재생성
+```
+
+`index.html`의 구조(새 섹션 추가 등)나 `i18n.js`의 번역 문구를 고쳤다면, 커밋 전에
+반드시 이 명령을 다시 실행해서 4개 언어를 동기화하세요. (`scripts/generate-lang-pages.js`가
+어떤 요소가 어떤 문자열에 대응하는지 매핑을 관리합니다 - `id`를 못 찾으면 스크립트가
+에러로 즉시 알려줍니다.)
+
 ## 로컬 실행
 
 ```bash

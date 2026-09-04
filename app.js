@@ -7,16 +7,14 @@ let currentLang = DEFAULT_LANG;
 let lastResult = null; // 언어 전환 시 재렌더링을 위해 마지막 계산 결과를 보관
 let lastCompatResult = null; // 궁합은 본인 사주와 별개로 두 사람 정보만으로 계산되므로 따로 보관
 
-function getStoredLang() {
-  try {
-    const stored = localStorage.getItem("saju-lang");
-    if (stored && SUPPORTED_LANGS.includes(stored)) return stored;
-  } catch (e) { /* localStorage 접근 불가 환경 대비 */ }
-  return DEFAULT_LANG;
+// 언어별로 실제 URL이 분리되어 있으므로(/, /zh/, /fr/, /ko/), 페이지 로드 시
+// 초기 언어는 저장된 값이 아니라 "지금 서버가 내려준 이 페이지 자체의 언어"를
+// 기준으로 삼는다. <html lang="..">는 각 언어 페이지에 정적으로 미리 박혀 있다.
+function getPageLang() {
+  const attr = (document.documentElement.getAttribute("lang") || "").toLowerCase();
+  return SUPPORTED_LANGS.includes(attr) ? attr : DEFAULT_LANG;
 }
-function setStoredLang(lang) {
-  try { localStorage.setItem("saju-lang", lang); } catch (e) { /* noop */ }
-}
+const LANG_PATH = { en: "/", zh: "/zh/", fr: "/fr/", ko: "/ko/" };
 
 // ---------- 정적 문자열 적용 ----------
 function applyStaticStrings(lang) {
@@ -120,17 +118,25 @@ function populateRegions(lang) {
 }
 
 // ---------- 언어 전환 ----------
+// 초기 렌더링(페이지 자체 언어 적용)에만 쓰인다. 드롭다운으로 다른 언어를
+// 고르면 더 이상 이 함수로 제자리 스왑하지 않고, 아래에서 해당 언어의
+// 실제 URL로 이동한다 (검색엔진이 색인하는 URL과 화면에 보이는 언어가
+// 항상 일치하도록 하기 위함).
 const langSwitch = document.getElementById("lang-switch");
 function setLang(lang) {
   currentLang = lang;
   langSwitch.value = lang;
-  setStoredLang(lang);
   applyStaticStrings(lang);
   populateRegions(lang);
   if (lastResult) renderResults(lang, lastResult);
   if (lastCompatResult) renderCompatibility(lang, lastCompatResult);
 }
-langSwitch.addEventListener("change", () => setLang(langSwitch.value));
+langSwitch.addEventListener("change", () => {
+  const target = langSwitch.value;
+  if (target === currentLang) return;
+  try { localStorage.setItem("saju-lang-choice", target); } catch (e) { /* noop */ }
+  location.href = LANG_PATH[target] || "/";
+});
 
 // ---------- 태어난 시간 드롭다운 (시/분/오전-오후) ----------
 const hourSelect = document.getElementById("birth-hour");
@@ -835,4 +841,4 @@ function renderResults(lang, result) {
 }
 
 // ---------- 초기화 ----------
-setLang(getStoredLang());
+setLang(getPageLang());
