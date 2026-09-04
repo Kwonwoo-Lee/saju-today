@@ -935,3 +935,16 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   .hero { padding: 48px 0 40px; }
   .nebula { filter: blur(50px); opacity: 0.22; }
 }
+
+/* ---------- legal pages (privacy / terms) ---------- */
+.legal-main { padding: 56px 0 80px; }
+.legal-main .wrap { max-width: 760px; }
+.legal-main h1 { font-size: 2rem; margin: 0 0 8px; letter-spacing: -0.01em; }
+.legal-updated { color: var(--text-muted); font-size: 0.82rem; margin: 0 0 40px; }
+.legal-main h2 { font-size: 1.15rem; margin: 40px 0 12px; letter-spacing: -0.01em; }
+.legal-main p, .legal-main li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.75; }
+.legal-main ul { padding-left: 20px; margin: 12px 0; }
+.legal-main li { margin: 6px 0; }
+.legal-main a { color: var(--accent-strong); }
+.legal-back { display: inline-block; margin-bottom: 32px; color: var(--text-muted); font-size: 0.85rem; text-decoration: none; }
+.legal-back:hover { color: var(--text); }

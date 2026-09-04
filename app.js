@@ -93,6 +93,9 @@ function applyStaticStrings(lang) {
   document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
   document.getElementById("footer-nav-year").textContent = s.navYear;
   document.getElementById("footer-nav-compat").textContent = s.navCompat;
+  document.getElementById("footer-nav-privacy").textContent = s.navPrivacy;
+  document.getElementById("footer-nav-terms").textContent = s.navTerms;
+  document.getElementById("footer-nav-contact").textContent = s.navContact;
   document.getElementById("footer-copyright").textContent = s.footerCopyright;
 }
 
