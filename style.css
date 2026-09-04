@@ -848,6 +848,17 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .compat-score-kicker { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
 .compat-score-relation { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--accent-strong); }
 
+/* ---------- about / FAQ (SEO 콘텐츠) ---------- */
+.about-seo { padding: 64px 0; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+.about-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 12px; }
+.about-lede { margin: 0 0 36px; max-width: 68ch; color: var(--text-muted); font-size: 0.98rem; line-height: 1.6; }
+.faq-list { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 40px; }
+.faq-item h3 { margin: 0 0 8px; font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+.faq-item p { margin: 0; font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+@media (max-width: 720px) {
+  .faq-list { grid-template-columns: 1fr; }
+}
+
 /* ---------- footer ---------- */
 .site-footer { border-top: 1px solid var(--border); padding: 28px 0 32px; position: relative; z-index: 1; }
 .site-footer p { margin: 0; font-size: 0.78rem; color: var(--text-muted); max-width: 60ch; }

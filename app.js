@@ -32,7 +32,7 @@ function applyStaticStrings(lang) {
   document.getElementById("brand-sub").textContent = s.brandSub;
   document.getElementById("hero-title-1").textContent = s.heroTitleLine1;
   document.getElementById("hero-title-2").textContent = s.heroTitleLine2;
-  document.getElementById("hero-eyebrow").textContent = s.brand;
+  document.getElementById("hero-eyebrow").textContent = s.heroEyebrowSeo;
   document.getElementById("hero-form-title").textContent = s.heroFormTitle;
   document.getElementById("form-back-label").textContent = s.formBack;
   document.getElementById("results-back-label").textContent = s.resultsBack;
@@ -81,6 +81,13 @@ function applyStaticStrings(lang) {
   document.getElementById("tab-compat-btn").textContent = s.resultTitleCompat;
   document.getElementById("footer-disclaimer").textContent = s.footerDisclaimer;
   document.getElementById("lang-switch").setAttribute("aria-label", s.langLabel);
+
+  document.getElementById("about-title").textContent = s.aboutTitle;
+  document.getElementById("about-lede").textContent = s.aboutLede;
+  for (let i = 1; i <= 5; i++) {
+    document.getElementById(`faq-q${i}`).textContent = s[`faqQ${i}`];
+    document.getElementById(`faq-a${i}`).textContent = s[`faqA${i}`];
+  }
 
   document.getElementById("footer-brand-name").textContent = s.brand;
   document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
