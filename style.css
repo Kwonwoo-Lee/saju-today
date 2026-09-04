@@ -948,3 +948,25 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .legal-main a { color: var(--accent-strong); }
 .legal-back { display: inline-block; margin-bottom: 32px; color: var(--text-muted); font-size: 0.85rem; text-decoration: none; }
 .legal-back:hover { color: var(--text); }
+
+/* ---------- 결과 공유 카드 저장 버튼 ---------- */
+.share-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent-strong);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+}
+.share-card-btn:hover { border-color: var(--accent); color: var(--accent-strong); transform: translateY(-1px); }
+.share-card-btn:active { transform: scale(0.97); }
+.share-card-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.share-card-btn.is-busy { opacity: 0.6; pointer-events: none; }

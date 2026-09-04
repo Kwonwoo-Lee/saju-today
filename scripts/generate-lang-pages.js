@@ -73,6 +73,7 @@ const TEXT_FIELDS = [
   ["footer-nav-analysis", "navAnalysis"], ["footer-nav-year", "navYear"], ["footer-nav-compat", "navCompat"],
   ["footer-nav-privacy", "navPrivacy"], ["footer-nav-terms", "navTerms"], ["footer-nav-contact", "navContact"],
   ["footer-copyright", "footerCopyright"],
+  ["share-today-label", "shareCardBtn"], ["share-year-label", "shareCardBtn"], ["share-compat-label", "shareCardBtn"],
   ["faq-q1", "faqQ1"], ["faq-a1", "faqA1"],
   ["faq-q2", "faqQ2"], ["faq-a2", "faqA2"],
   ["faq-q3", "faqQ3"], ["faq-a3", "faqA3"],

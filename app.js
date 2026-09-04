@@ -95,6 +95,9 @@ function applyStaticStrings(lang) {
   document.getElementById("footer-nav-terms").textContent = s.navTerms;
   document.getElementById("footer-nav-contact").textContent = s.navContact;
   document.getElementById("footer-copyright").textContent = s.footerCopyright;
+  document.getElementById("share-today-label").textContent = s.shareCardBtn;
+  document.getElementById("share-year-label").textContent = s.shareCardBtn;
+  document.getElementById("share-compat-label").textContent = s.shareCardBtn;
 }
 
 // ---------- 지역 셀렉트 ----------
@@ -839,6 +842,80 @@ function renderResults(lang, result) {
 
   renderYearFortune(lang, yearFortune);
 }
+
+// ---------- 결과 공유 카드 ----------
+// share-card.js는 사주 계산을 모르는 순수 렌더러이므로, 여기서 이미 계산·번역이
+//끝난 lastResult/lastCompatResult를 카드용 평문 데이터로 조립해서 넘겨준다.
+function buildTodayCardPayload(lang) {
+  if (!lastResult) return null;
+  const s = STRINGS[lang];
+  const { name, fortune } = lastResult;
+  const info = TEN_GOD_INFO[lang][fortune.tenGodKey];
+  const sep = lang === "zh" ? "、" : " · ";
+  const luckyLabel = { en: "Lucky", zh: "幸运", fr: "Chance", ko: "행운" }[lang];
+  const colorName = LUCKY_COLOR_NAMES[lang][fortune.todayElement];
+  return {
+    type: "today", lang,
+    brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
+    dateLabel: new Date().toLocaleDateString(LOCALE_CODE[lang], { year: "numeric", month: "long", day: "numeric" }),
+    name,
+    ganjiGlyph: todayGlyphText(lang, fortune), ganjiElement: fortune.todayElement,
+    ganjiLabel: formatTodayGanji(lang, fortune).replace(/<[^>]+>/g, ""),
+    headline: info.overall,
+    luckyLine: `${luckyLabel}: ${colorName}${sep}${fortune.luckyNumbers.join(sep)}`,
+  };
+}
+
+function buildYearCardPayload(lang) {
+  if (!lastResult) return null;
+  const s = STRINGS[lang];
+  const { name, yearFortune } = lastResult;
+  const currentYear = new Date().getFullYear();
+  return {
+    type: "year", lang,
+    brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
+    dateLabel: String(currentYear),
+    name,
+    ganjiGlyph: yearGlyphText(lang, yearFortune), ganjiElement: yearFortune.yearElement,
+    headline: YEAR_FORTUNE_INFO[lang][yearFortune.tenGodKey],
+  };
+}
+
+function buildCompatCardPayload(lang) {
+  if (!lastCompatResult) return null;
+  const s = STRINGS[lang];
+  const c = lastCompatResult;
+  return {
+    type: "compat", lang,
+    brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
+    nameA: c.nameA, nameB: c.nameB,
+    glyphA: dayMasterGlyphText(lang, c.dayMasterA), glyphB: dayMasterGlyphText(lang, c.dayMasterB),
+    elA: c.elA, elB: c.elB,
+    relationLabel: `${c.nameA} ${s.compatIntro} ${c.nameB}`,
+    score: c.score,
+    tierLabel: compatTierLabel(lang, c.score),
+    body: COMPAT_TEN_GOD_INFO[lang][c.tenGodKey],
+  };
+}
+
+const SHARE_CARD_BUILDERS = { today: buildTodayCardPayload, year: buildYearCardPayload, compat: buildCompatCardPayload };
+
+document.querySelectorAll(".share-card-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const type = btn.dataset.shareType;
+    const payload = SHARE_CARD_BUILDERS[type] && SHARE_CARD_BUILDERS[type](currentLang);
+    if (!payload) return;
+    btn.classList.add("is-busy");
+    try {
+      await shareCardDownload(payload, `saju-today-${type}.png`);
+      if (typeof gtag === "function") gtag("event", "share_card_download", { card_type: type });
+    } catch (e) {
+      /* 캔버스 렌더링 실패해도 페이지 기능에는 영향 없게 조용히 무시 */
+    } finally {
+      btn.classList.remove("is-busy");
+    }
+  });
+});
 
 // ---------- 초기화 ----------
 setLang(getPageLang());
