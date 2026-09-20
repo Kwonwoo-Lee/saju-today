@@ -18,12 +18,13 @@ const SHARE_CARD_MUTED = "#9b9fc2";
 const SHARE_CARD_ACCENT = "#c9a24b";
 const SHARE_CARD_ACCENT_STRONG = "#ecc978";
 const SHARE_CARD_BORDER = "rgba(255, 255, 255, 0.12)";
+const SHARE_CARD_HOMEPAGE = "https://saju.tradesmrt.com";
 const SHARE_CARD_ELEMENT_COLOR = {
   wood: "#7cc389", fire: "#e2795f", earth: "#e0bd6e", metal: "#b9c2cf", water: "#7ba8d1",
 };
 const SHARE_CARD_FONT_UI = '"Pretendard", -apple-system, "Malgun Gothic", sans-serif';
 const SHARE_CARD_FONT_HANJA = '"Noto Serif KR", "Noto Serif SC", serif';
-const SHARE_CARD_HEIGHT_BY_TYPE = { today: 1700, year: 1600, compat: 1500 };
+const SHARE_CARD_HEIGHT_BY_TYPE = { horoscope: 1920, today: 1920, year: 1920, compat: 1920 };
 
 function shareCardWrapText(ctx, text, maxWidth, lang) {
   // 중국어는 띄어쓰기가 없으므로 글자 단위로, 나머지 언어는 단어 단위로 줄바꿈한다.
@@ -220,6 +221,30 @@ function shareCardDrawToday(ctx, d, h) {
   }
 }
 
+function shareCardDrawHoroscope(ctx, d, h) {
+  ctx.textAlign = "left";
+  ctx.fillStyle = SHARE_CARD_MUTED;
+  ctx.font = `500 28px ${SHARE_CARD_FONT_UI}`;
+  ctx.fillText(d.range, 76, 190);
+  ctx.fillStyle = SHARE_CARD_INK;
+  ctx.font = `800 46px ${SHARE_CARD_FONT_UI}`;
+  ctx.fillText(d.name, 76, 248);
+  shareCardDrawGlyphBadge(ctx, SHARE_CARD_W / 2, 420, 118, d.symbol, "fire", d.lang, 74);
+  ctx.textAlign = "center";
+  ctx.fillStyle = SHARE_CARD_ACCENT_STRONG;
+  ctx.font = `800 42px ${SHARE_CARD_FONT_UI}`;
+  ctx.fillText(d.sign, SHARE_CARD_W / 2, 610);
+  shareCardDrawFitParagraph(ctx, d.headline, SHARE_CARD_W / 2, 720, 920, d.lang, {
+    align: "center", color: SHARE_CARD_INK, weight: 600, maxFontSize: 34, minFontSize: 22, maxLines: 5,
+  });
+  shareCardDrawFitParagraph(ctx, d.body, SHARE_CARD_W / 2, 980, 900, d.lang, {
+    align: "center", color: SHARE_CARD_MUTED, weight: 500, maxFontSize: 28, minFontSize: 20, maxLines: 8,
+  });
+  ctx.fillStyle = SHARE_CARD_ACCENT_STRONG;
+  ctx.font = `700 28px ${SHARE_CARD_FONT_UI}`;
+  ctx.fillText(d.luckyLine, SHARE_CARD_W / 2, 1370);
+}
+
 function shareCardDrawYear(ctx, d, h) {
   ctx.textAlign = "left";
   ctx.fillStyle = SHARE_CARD_MUTED;
@@ -293,7 +318,8 @@ function renderShareCardBlob(payload) {
 
     shareCardDrawBackground(ctx, h);
     shareCardDrawBrandHeader(ctx, payload.brand);
-    if (payload.type === "today") shareCardDrawToday(ctx, payload, h);
+    if (payload.type === "horoscope") shareCardDrawHoroscope(ctx, payload, h);
+    else if (payload.type === "today") shareCardDrawToday(ctx, payload, h);
     else if (payload.type === "year") shareCardDrawYear(ctx, payload, h);
     else if (payload.type === "compat") shareCardDrawCompat(ctx, payload, h);
     shareCardDrawFooter(ctx, h, payload.footerUrl, payload.footerCta);
@@ -314,5 +340,27 @@ async function shareCardDownload(payload, filename) {
   document.body.appendChild(a);
   a.click();
   a.remove();
+
+  const linkUrl = payload.linkUrl || payload.footerUrl || SHARE_CARD_HOMEPAGE;
+  try {
+    window.open(linkUrl, "_blank", "noopener,noreferrer");
+  } catch (error) {
+    // 일부 브라우저는 새 탭을 막을 수 있으므로 조용히 무시한다.
+  }
+
   setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+async function shareCardToStory(payload) {
+  await (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve());
+  const blob = await renderShareCardBlob(payload);
+  const file = new File([blob], `saju-today-${payload.type}.png`, { type: "image/png" });
+  const shareData = { title: payload.brand, text: payload.footerCta, url: payload.linkUrl || SHARE_CARD_HOMEPAGE };
+  if (navigator.canShare && navigator.canShare({ files: [file] })) shareData.files = [file];
+  if (navigator.share) {
+    await navigator.share(shareData);
+    return;
+  }
+  await navigator.clipboard.writeText(shareData.url);
+  await shareCardDownload(payload, `saju-today-${payload.type}.png`);
 }

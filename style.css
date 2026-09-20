@@ -976,3 +976,20 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .share-card-btn:active { transform: scale(0.97); }
 .share-card-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .share-card-btn.is-busy { opacity: 0.6; pointer-events: none; }
+.result-share-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.share-story-btn,
+.copy-share-link-btn {
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 9px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+.share-story-btn { color: #14110a; background: linear-gradient(135deg, var(--accent-strong), var(--accent)); border-color: transparent; }
+.share-story-btn:hover, .copy-share-link-btn:hover { border-color: var(--accent); color: var(--accent-strong); transform: translateY(-1px); }
+.share-story-btn:hover { color: #14110a; }

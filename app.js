@@ -111,6 +111,8 @@ function applyStaticStrings(lang) {
   document.getElementById("share-today-label").textContent = s.shareCardBtn;
   document.getElementById("share-year-label").textContent = s.shareCardBtn;
   document.getElementById("share-compat-label").textContent = s.shareCardBtn;
+  document.querySelectorAll(".share-story-btn").forEach((button) => { button.textContent = s.shareStoryBtn; });
+  document.querySelectorAll(".copy-share-link-btn").forEach((button) => { button.textContent = s.copyShareLinkBtn; });
 }
 
 // ---------- 지역 셀렉트 ----------
@@ -952,6 +954,7 @@ function buildTodayCardPayload(lang) {
     brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
     dateLabel: new Date().toLocaleDateString(LOCALE_CODE[lang], { year: "numeric", month: "long", day: "numeric" }),
     name,
+    linkUrl: buildShareUrl("today"),
     ganjiGlyph: todayGlyphText(lang, fortune), ganjiElement: fortune.todayElement,
     ganjiLabel: formatTodayGanji(lang, fortune).replace(/<[^>]+>/g, ""),
     headline: info.overall,
@@ -969,6 +972,7 @@ function buildYearCardPayload(lang) {
     brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
     dateLabel: String(currentYear),
     name,
+    linkUrl: buildShareUrl("year"),
     ganjiGlyph: yearGlyphText(lang, yearFortune), ganjiElement: yearFortune.yearElement,
     headline: YEAR_FORTUNE_INFO[lang][yearFortune.tenGodKey],
   };
@@ -988,10 +992,32 @@ function buildCompatCardPayload(lang) {
     score: c.score,
     tierLabel: compatTierLabel(lang, c.score),
     body: COMPAT_TEN_GOD_INFO[lang][c.tenGodKey],
+    linkUrl: buildShareUrl("compat"),
   };
 }
 
-const SHARE_CARD_BUILDERS = { today: buildTodayCardPayload, year: buildYearCardPayload, compat: buildCompatCardPayload };
+function buildShareUrl(type) {
+  const url = new URL(location.href);
+  url.hash = "";
+  url.searchParams.set("shared", type);
+  return url.toString();
+}
+
+function buildHoroscopeCardPayload(lang) {
+  if (!lastHoroscopeResult) return null;
+  const s = STRINGS[lang];
+  const result = lastHoroscopeResult;
+  const reading = s.horoscopeReadings[result.element];
+  return {
+    type: "horoscope", lang, brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
+    linkUrl: buildShareUrl("horoscope"), name: result.name, sign: s.horoscopeSigns[result.index],
+    range: s.horoscopeRanges[result.index], symbol: ZODIAC_SYMBOLS[result.index],
+    headline: reading.headline, body: reading.body,
+    luckyLine: `${s.horoscopeLuckyLabel}: ${s.horoscopeLuckyColors[result.element]}`,
+  };
+}
+
+const SHARE_CARD_BUILDERS = { horoscope: buildHoroscopeCardPayload, today: buildTodayCardPayload, year: buildYearCardPayload, compat: buildCompatCardPayload };
 
 document.querySelectorAll(".share-card-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
@@ -1006,6 +1032,34 @@ document.querySelectorAll(".share-card-btn").forEach((btn) => {
       /* 캔버스 렌더링 실패해도 페이지 기능에는 영향 없게 조용히 무시 */
     } finally {
       btn.classList.remove("is-busy");
+    }
+  });
+});
+
+document.querySelectorAll(".copy-share-link-btn").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const payload = SHARE_CARD_BUILDERS[button.dataset.shareType]?.(currentLang);
+    if (!payload) return;
+    try {
+      await navigator.clipboard.writeText(payload.linkUrl);
+      button.textContent = STRINGS[currentLang].shareLinkCopied;
+      setTimeout(() => { button.textContent = STRINGS[currentLang].copyShareLinkBtn; }, 1800);
+    } catch (error) {
+      window.prompt(STRINGS[currentLang].copyShareLinkPrompt, payload.linkUrl);
+    }
+  });
+});
+
+document.querySelectorAll(".share-story-btn").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const payload = SHARE_CARD_BUILDERS[button.dataset.shareType]?.(currentLang);
+    if (!payload) return;
+    try {
+      await shareCardToStory(payload);
+    } catch (error) {
+      await navigator.clipboard.writeText(payload.linkUrl).catch(() => {});
+      button.textContent = STRINGS[currentLang].shareLinkCopied;
+      setTimeout(() => { button.textContent = STRINGS[currentLang].shareStoryBtn; }, 1800);
     }
   });
 });
