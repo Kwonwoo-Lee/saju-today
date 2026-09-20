@@ -621,7 +621,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 /* ---------- hero cards (landing view) ---------- */
 .hero-cards {
   display: none;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
 .hero-grid.is-landing .hero-cards { display: grid; }
@@ -646,6 +646,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .feature-card--today { background: linear-gradient(160deg, #1c3a66, #0f2140 75%); border-color: rgba(90, 140, 210, 0.35); }
 .feature-card--pillars { background: linear-gradient(160deg, #2f2166, #1a1240 75%); border-color: rgba(140, 110, 220, 0.35); }
 .feature-card--wuxing { background: linear-gradient(160deg, #5c1f52, #2f1030 75%); border-color: rgba(220, 110, 190, 0.35); }
+.feature-card--horoscope { background: linear-gradient(160deg, #68451f, #38230f 75%); border-color: rgba(230, 173, 86, 0.42); }
 .feature-icon {
   display: inline-flex;
   align-items: center;
@@ -687,6 +688,10 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .result-block[hidden] { display: none; }
 .result-title { font-size: 1.3rem; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.015em; }
 .correction-note { margin: 0 0 26px; font-size: 0.85rem; color: var(--text-muted); }
+.horoscope-hero-result { display: flex; align-items: center; gap: 18px; margin: 24px 0; }
+.horoscope-symbol { display: grid; place-items: center; width: 82px; aspect-ratio: 1; border: 1px solid rgba(236, 201, 120, 0.5); border-radius: 50%; color: var(--accent-strong); font-family: Georgia, serif; font-size: 2.7rem; background: radial-gradient(circle, rgba(201, 162, 75, 0.22), transparent 70%); box-shadow: 0 0 34px rgba(var(--glow-tint), 0.18); }
+.horoscope-sign { margin: 0; font-size: 1.45rem; font-weight: 700; }
+.horoscope-range { margin: 3px 0 0; color: var(--text-muted); font-size: 0.88rem; }
 
 .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .pillar {
@@ -921,7 +926,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-orbit { width: min(80vw, 300px); margin: 20px auto; }
   .hero-copy { text-align: left; }
-  .hero-cards { grid-template-columns: 1fr; }
+  .hero-cards { grid-template-columns: repeat(2, 1fr); }
   .results-top { grid-template-columns: 1fr; }
   #block-pillars { padding: 40px 0; border-right: none; border-bottom: 1px solid var(--border); }
   #block-wuxing { padding: 40px 0; }
@@ -933,6 +938,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
   .fortune-grid { grid-template-columns: 1fr; }
   .hero-form { padding: 24px; }
   .hero { padding: 48px 0 40px; }
+  .hero-cards { grid-template-columns: 1fr; }
   .nebula { filter: blur(50px); opacity: 0.22; }
 }
 

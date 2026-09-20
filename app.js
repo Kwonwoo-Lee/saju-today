@@ -6,6 +6,7 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 let currentLang = DEFAULT_LANG;
 let lastResult = null; // 언어 전환 시 재렌더링을 위해 마지막 계산 결과를 보관
 let lastCompatResult = null; // 궁합은 본인 사주와 별개로 두 사람 정보만으로 계산되므로 따로 보관
+let lastHoroscopeResult = null;
 
 // 언어별로 실제 URL이 분리되어 있으므로(/, /zh/, /fr/, /ko/), 페이지 로드 시
 // 초기 언어는 저장된 값이 아니라 "지금 서버가 내려준 이 페이지 자체의 언어"를
@@ -32,6 +33,8 @@ function applyStaticStrings(lang) {
   document.getElementById("hero-title-2").textContent = s.heroTitleLine2;
   document.getElementById("hero-eyebrow").textContent = s.heroEyebrowSeo;
   document.getElementById("hero-form-title").textContent = s.heroFormTitle;
+  document.getElementById("horoscope-form-title").textContent = s.horoscopeFormTitle;
+  document.getElementById("horoscope-form-back-label").textContent = s.formBack;
   document.getElementById("form-back-label").textContent = s.formBack;
   document.getElementById("results-back-label").textContent = s.resultsBack;
   document.getElementById("feature-pillars-title").textContent = s.featurePillarsTitle;
@@ -40,6 +43,8 @@ function applyStaticStrings(lang) {
   document.getElementById("feature-wuxing-body").textContent = s.featureWuxingBody;
   document.getElementById("feature-today-title").textContent = s.featureTodayTitle;
   document.getElementById("feature-today-body").textContent = s.featureTodayBody;
+  document.getElementById("feature-horoscope-title").textContent = s.featureHoroscopeTitle;
+  document.getElementById("feature-horoscope-body").textContent = s.featureHoroscopeBody;
 
   document.getElementById("label-name").textContent = s.labelName;
   document.getElementById("name").placeholder = s.placeholderName;
@@ -59,6 +64,11 @@ function applyStaticStrings(lang) {
   document.getElementById("label-dst").textContent = s.labelDST;
   document.getElementById("hint-dst").textContent = s.hintDST;
   document.getElementById("submit-btn-label").textContent = s.submitBtn;
+  document.getElementById("label-horoscope-name").textContent = s.labelHoroscopeName;
+  document.getElementById("horoscope-name").placeholder = s.placeholderName;
+  document.getElementById("label-horoscope-date").textContent = s.labelHoroscopeDate;
+  document.getElementById("hint-horoscope-date").textContent = s.hintHoroscopeDate;
+  document.getElementById("horoscope-submit-btn-label").textContent = s.horoscopeSubmitBtn;
   document.getElementById("compat-form-title").textContent = s.compatFormTitle;
   document.getElementById("compat-form-back-label").textContent = s.formBack;
   document.getElementById("label-compat-name-a").textContent = s.labelCompatNameA;
@@ -74,6 +84,8 @@ function applyStaticStrings(lang) {
   document.getElementById("today-title").textContent = s.resultTitleToday;
   document.getElementById("year-title").textContent = s.resultTitleYear;
   document.getElementById("compat-title").textContent = s.resultTitleCompat;
+  document.getElementById("horoscope-result-title").textContent = s.resultTitleHoroscope;
+  document.getElementById("tab-horoscope-btn").textContent = s.resultTitleHoroscope;
   document.getElementById("tab-today-btn").textContent = s.resultTitleToday;
   document.getElementById("tab-year-btn").textContent = s.resultTitleYear;
   document.getElementById("tab-compat-btn").textContent = s.resultTitleCompat;
@@ -89,6 +101,7 @@ function applyStaticStrings(lang) {
 
   document.getElementById("footer-brand-name").textContent = s.brand;
   document.getElementById("footer-nav-analysis").textContent = s.navAnalysis;
+  document.getElementById("footer-nav-horoscope").textContent = s.navHoroscope;
   document.getElementById("footer-nav-year").textContent = s.navYear;
   document.getElementById("footer-nav-compat").textContent = s.navCompat;
   document.getElementById("footer-nav-privacy").textContent = s.navPrivacy;
@@ -133,6 +146,7 @@ function setLang(lang) {
   populateRegions(lang);
   if (lastResult) renderResults(lang, lastResult);
   if (lastCompatResult) renderCompatibility(lang, lastCompatResult);
+  if (lastHoroscopeResult) renderHoroscope(lang, lastHoroscopeResult);
 }
 langSwitch.addEventListener("change", () => {
   const target = langSwitch.value;
@@ -203,6 +217,7 @@ function setupNameValidation(id) {
 }
 const nameInput = document.getElementById("name");
 setupNameValidation("name");
+setupNameValidation("horoscope-name");
 setupNameValidation("compat-name-a");
 setupNameValidation("compat-name-b");
 
@@ -261,10 +276,47 @@ function setupDateField(displayId, hiddenId, nativeId) {
 const birthDateField = setupDateField("birth-date-display", "birth-date", "birth-date-native");
 const compatDateAField = setupDateField("compat-date-a-display", "compat-date-a", "compat-date-a-native");
 const compatDateBField = setupDateField("compat-date-b-display", "compat-date-b", "compat-date-b-native");
+const horoscopeDateField = setupDateField("horoscope-date-display", "horoscope-date", "horoscope-date-native");
+
+const ZODIAC_RANGES = [
+  [3, 21, 4, 19], [4, 20, 5, 20], [5, 21, 6, 20], [6, 21, 7, 22],
+  [7, 23, 8, 22], [8, 23, 9, 22], [9, 23, 10, 22], [10, 23, 11, 21],
+  [11, 22, 12, 21], [12, 22, 1, 19], [1, 20, 2, 18], [2, 19, 3, 20],
+];
+const ZODIAC_ELEMENTS = ["fire", "earth", "air", "water", "fire", "earth", "air", "water", "fire", "earth", "air", "water"];
+const ZODIAC_SYMBOLS = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"];
+
+function getZodiacSign(month, day) {
+  const value = month * 100 + day;
+  const index = ZODIAC_RANGES.findIndex(([startMonth, startDay, endMonth, endDay]) => {
+    const start = startMonth * 100 + startDay;
+    const end = endMonth * 100 + endDay;
+    return start <= end ? value >= start && value <= end : value >= start || value <= end;
+  });
+  return { index: index < 0 ? 0 : index, element: ZODIAC_ELEMENTS[index < 0 ? 0 : index] };
+}
 
 // ---------- 폼 제출 ----------
 const form = document.getElementById("saju-form");
 const resultsSection = document.getElementById("results");
+const horoscopeForm = document.getElementById("horoscope-form");
+
+horoscopeForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!horoscopeForm.reportValidity()) return;
+  horoscopeDateField.sync();
+  if (!document.getElementById("horoscope-date").value) {
+    horoscopeDateField.displayEl.classList.add("field-error");
+    horoscopeDateField.displayEl.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    return;
+  }
+  const [year, month, day] = document.getElementById("horoscope-date").value.split("-").map(Number);
+  lastHoroscopeResult = { name: document.getElementById("horoscope-name").value.trim(), year, month, day, ...getZodiacSign(month, day) };
+  activeResultTab = "horoscope";
+  renderHoroscope(currentLang, lastHoroscopeResult);
+  applyResultTabVisibility();
+  showResultsView();
+});
 
 const genderToggleEl = document.getElementById("gender-toggle");
 
@@ -355,9 +407,10 @@ compatForm.addEventListener("submit", (e) => {
   showResultsView();
 });
 
-// ---------- 결과 탭 (오늘의 운세 / 신년 총운 / 궁합 따로 선택해서 보기) ----------
-let activeResultTab = "today";
+// ---------- 결과 탭 (별자리 / 오늘의 운세 / 신년 총운 / 궁합 따로 선택해서 보기) ----------
+let activeResultTab = "horoscope";
 const resultBlocks = {
+  horoscope: document.getElementById("block-horoscope"),
   today: document.getElementById("block-today"),
   year: document.getElementById("block-year"),
   compat: document.getElementById("block-compat"),
@@ -366,13 +419,14 @@ const resultTabButtons = document.querySelectorAll("#result-tabs .pill-toggle-bt
 const todayTabBtn = document.querySelector('#result-tabs [data-tab="today"]');
 const yearTabBtn = document.querySelector('#result-tabs [data-tab="year"]');
 const compatTabBtn = document.querySelector('#result-tabs [data-tab="compat"]');
+const horoscopeTabBtn = document.querySelector('#result-tabs [data-tab="horoscope"]');
 const resultsTopEl = document.getElementById("results-top");
 
-// 오늘/신년 운세는 본인 사주(lastResult)가, 궁합은 별도의 두 사람 정보(lastCompatResult)가 있어야 보여줄 수 있다.
-// 본인 사주를 아직 계산하지 않았다면 사주팔자/오행 패널과 오늘·신년 탭 자체를 숨긴다.
+// 사주 기반 결과와 궁합은 각각의 입력 데이터가 있을 때만 활성화한다.
 function applyResultTabVisibility() {
   const hasSelf = !!lastResult;
   const hasCompat = !!lastCompatResult;
+  const hasHoroscope = !!lastHoroscopeResult;
   resultsTopEl.hidden = !hasSelf;
   Object.entries(resultBlocks).forEach(([key, el]) => { el.hidden = key !== activeResultTab; });
   resultTabButtons.forEach((btn) => {
@@ -383,15 +437,18 @@ function applyResultTabVisibility() {
   todayTabBtn.classList.toggle("is-disabled", !hasSelf);
   yearTabBtn.classList.toggle("is-disabled", !hasSelf);
   compatTabBtn.classList.toggle("is-disabled", !hasCompat);
+  horoscopeTabBtn.classList.toggle("is-disabled", !hasHoroscope);
 }
 
 // ---------- 랜딩(카드 선택) / 입력 폼 화면 전환 ----------
-// 처음엔 입력 칸 없이 카드 3개만 보여주고, 카드를 누르면 그때 해당 운세용 입력 폼으로 들어간다.
+// 처음엔 입력 칸 없이 카드 4개만 보여주고, 카드를 누르면 해당 운세용 입력 폼으로 들어간다.
 // 궁합은 본인 정보 폼과 완전히 별개인 전용 폼(두 사람의 이름+생년월일)을 사용한다.
 const heroGrid = document.getElementById("hero-grid");
 const heroFormWrap = document.getElementById("hero-form-wrap");
+const horoscopeFormWrap = document.getElementById("horoscope-form-wrap");
 const compatFormWrap = document.getElementById("compat-form-wrap");
 const formBackBtn = document.getElementById("form-back-btn");
+const horoscopeFormBackBtn = document.getElementById("horoscope-form-back-btn");
 const compatFormBackBtn = document.getElementById("compat-form-back-btn");
 const heroSection = document.querySelector(".hero");
 
@@ -401,6 +458,7 @@ function showLanding() {
   resultsSection.classList.remove("revealed");
   heroGrid.classList.add("is-landing");
   heroFormWrap.hidden = true;
+  horoscopeFormWrap.hidden = true;
   compatFormWrap.hidden = true;
   if (location.hash) history.replaceState(null, "", location.pathname + location.search);
 }
@@ -412,15 +470,19 @@ function showFormView(tab) {
   resultsSection.classList.remove("revealed");
   heroGrid.classList.remove("is-landing");
   const isCompat = tab === "compat";
-  heroFormWrap.hidden = isCompat;
+  const isHoroscope = tab === "horoscope";
+  heroFormWrap.hidden = isCompat || isHoroscope;
+  horoscopeFormWrap.hidden = !isHoroscope;
   compatFormWrap.hidden = !isCompat;
   if (tab) activeResultTab = tab;
   history.replaceState(null, "", "#" + (tab || "form"));
-  const wrap = isCompat ? compatFormWrap : heroFormWrap;
+  const wrap = isCompat ? compatFormWrap : (isHoroscope ? horoscopeFormWrap : heroFormWrap);
   wrap.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
   if (isCompat) document.getElementById("compat-name-a").focus({ preventScroll: true });
+  if (isHoroscope) document.getElementById("horoscope-name").focus({ preventScroll: true });
 }
 formBackBtn.addEventListener("click", showLanding);
+horoscopeFormBackBtn.addEventListener("click", showLanding);
 compatFormBackBtn.addEventListener("click", showLanding);
 
 // ---------- 입력 화면 → 결과 화면 전환 ----------
@@ -444,7 +506,7 @@ resultsBackBtn.addEventListener("click", hideResultsView);
 // 상단 3카드 / 결과 탭 / 헤더·푸터의 신년운세·궁합 내비게이션에서 공통으로 쓰는 이동 로직.
 // 해당 탭에 필요한 데이터(본인 사주 또는 궁합 정보)가 아직 없으면 알맞은 입력 폼을 연다.
 function goToResultTab(tab) {
-  const hasData = tab === "compat" ? !!lastCompatResult : !!lastResult;
+  const hasData = tab === "compat" ? !!lastCompatResult : (tab === "horoscope" ? !!lastHoroscopeResult : !!lastResult);
   if (!hasData) {
     showFormView(tab);
     return;
@@ -454,13 +516,17 @@ function goToResultTab(tab) {
   resultsSection.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
 }
 
-// 초기 진입: 주소에 #today/#year/#compat 이 붙어 있으면 바로 그 폼으로 들어간다.
+// 초기 진입: 주소에 운세 종류 해시가 붙어 있으면 바로 해당 폼으로 들어간다.
 const initialHash = location.hash.replace("#", "");
-if (["today", "year", "compat"].includes(initialHash)) showFormView(initialHash);
+if (["horoscope", "today", "year", "compat"].includes(initialHash)) showFormView(initialHash);
 
 resultTabButtons.forEach((btn) => btn.addEventListener("click", () => goToResultTab(btn.dataset.tab)));
 document.querySelectorAll(".feature-card--clickable").forEach((card) => {
   card.addEventListener("click", () => goToResultTab(card.dataset.tab));
+});
+document.getElementById("footer-nav-horoscope").addEventListener("click", (e) => {
+  e.preventDefault();
+  goToResultTab("horoscope");
 });
 [["footer-nav-year", "year"], ["footer-nav-compat", "compat"]].forEach(([id, tab]) => {
   document.getElementById(id).addEventListener("click", (e) => { e.preventDefault(); goToResultTab(tab); });
@@ -471,7 +537,7 @@ document.getElementById("footer-nav-analysis").addEventListener("click", (e) => 
   showFormView();
 });
 
-// 로고(브랜드) 클릭 = 홈으로: 결과 화면이든 폼 화면이든 다 접고 처음 랜딩(카드 3개) 화면으로 돌아간다.
+// 로고(브랜드) 클릭 = 홈으로: 결과 화면이든 폼 화면이든 다 접고 처음 랜딩 화면으로 돌아간다.
 document.querySelector(".brand-lockup").addEventListener("click", (e) => {
   e.preventDefault();
   showLanding();
@@ -786,6 +852,33 @@ function renderCompatibility(lang, compat) {
   arc.style.strokeDashoffset = `${COMPAT_SCORE_CIRC * (1 - compat.score / 100)}`;
 
   document.getElementById("compat-body").textContent = COMPAT_TEN_GOD_INFO[lang][compat.tenGodKey];
+}
+
+function renderHoroscope(lang, result) {
+  const s = STRINGS[lang];
+  const sign = s.horoscopeSigns[result.index];
+  const reading = s.horoscopeReadings[result.element];
+  const score = 60 + ((result.index * 7 + result.day) % 36);
+  document.getElementById("horoscope-result-date").textContent = new Date().toLocaleDateString(LOCALE_CODE[lang], { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+  document.getElementById("horoscope-symbol").textContent = ZODIAC_SYMBOLS[result.index];
+  document.getElementById("horoscope-sign").textContent = `${sign} · ${score}/100`;
+  document.getElementById("horoscope-range").textContent = s.horoscopeRanges[result.index];
+  document.getElementById("horoscope-headline").textContent = reading.headline;
+  document.getElementById("horoscope-body").textContent = `${result.name}, ${reading.body}`;
+  const grid = document.getElementById("horoscope-grid");
+  grid.innerHTML = "";
+  [
+    { label: s.horoscopeLoveLabel, text: reading.love },
+    { label: s.horoscopeWorkLabel, text: reading.work },
+    { label: s.horoscopeAdviceLabel, text: reading.advice },
+  ].forEach((item, i) => {
+    const card = document.createElement("div");
+    card.className = "fortune-card";
+    card.style.setProperty("--stagger", i);
+    card.innerHTML = `<h3>${item.label}</h3><p>${item.text}</p>`;
+    grid.appendChild(card);
+  });
+  document.getElementById("horoscope-lucky-row").textContent = `${s.horoscopeLuckyLabel}: ${s.horoscopeLuckyColors[result.element]} · ${score % 9 + 1}`;
 }
 
 function renderResults(lang, result) {
