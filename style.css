@@ -427,7 +427,9 @@ select:focus-visible {
 .solar-arc { fill: none; stroke: rgba(255, 232, 164, 0.58); stroke-width: 1.2; stroke-linecap: round; stroke-dasharray: 2 8; }
 .solar-arc--b { stroke: rgba(123, 168, 209, 0.44); stroke-dasharray: 1 6; }
 
-.planet { stroke: rgba(0, 0, 0, 0.3); stroke-width: 0.5; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); }
+.planet { stroke: rgba(227, 255, 243, 0.35); stroke-width: 0.7; filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.58)); }
+.planet-orbit { transform-box: fill-box; transform-origin: center; }
+.planet-sphere { mix-blend-mode: screen; }
 .planet-rings { fill: none; stroke: #d3d9b4; stroke-width: 1.4; opacity: 0.86; }
 .planet-rings--glow { stroke: #78c7c5; stroke-width: 4; opacity: 0.22; filter: blur(2px); }
 .planet-atmosphere { opacity: 0.55; mix-blend-mode: screen; }
