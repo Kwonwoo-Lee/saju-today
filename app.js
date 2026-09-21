@@ -1027,8 +1027,8 @@ function randomizeShootingStar(star) {
   star.style.left = `${4 + Math.random() * 88}%`;
   star.style.top = `${8 + Math.random() * 72}%`;
   star.style.setProperty("--shoot-angle", `${angle}deg`);
-  star.style.setProperty("--shoot-x", `${150 + Math.random() * 220}px`);
-  star.style.setProperty("--shoot-y", `${55 + Math.random() * 135}px`);
+  star.style.setProperty("--shoot-x", `${260 + Math.random() * 300}px`);
+  star.style.setProperty("--shoot-y", `${90 + Math.random() * 190}px`);
   star.style.animationDuration = `${7 + Math.random() * 8}s`;
 }
 

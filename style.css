@@ -274,27 +274,39 @@ select:focus-visible {
 
 .shooting-star {
   position: absolute;
-  width: clamp(100px, 14vw, 190px);
-  height: 3px;
-  background: linear-gradient(90deg, rgba(255, 251, 226, 0.98), rgba(236, 201, 120, 0.65) 24%, transparent 100%);
+  width: clamp(120px, 17vw, 240px);
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 251, 226, 0.98), rgba(236, 201, 120, 0.55) 20%, transparent 88%);
   border-radius: var(--radius-pill);
   opacity: 0;
   transform-origin: left center;
-  transform: rotate(var(--shoot-angle, -24deg));
-  box-shadow: 0 0 8px 1px rgba(255, 241, 184, 0.7);
-  filter: drop-shadow(0 0 5px rgba(236, 201, 120, 0.6));
+  transform: rotate(var(--shoot-angle, -24deg)) scaleX(0.4);
+  filter: drop-shadow(0 0 4px rgba(236, 201, 120, 0.55));
 }
-.shooting-star::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 12px; transform: translateY(-50%); background: linear-gradient(90deg, rgba(255, 244, 191, 0.34), transparent 80%); filter: blur(4px); }
+.shooting-star::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: #fffaf0;
+  box-shadow: 0 0 8px 2px rgba(255, 246, 214, 0.95), 0 0 18px 6px rgba(236, 201, 120, 0.5);
+}
+.shooting-star::after { content: ""; position: absolute; left: 0; top: 50%; width: 100%; height: 10px; transform: translateY(-50%); background: linear-gradient(90deg, rgba(255, 244, 191, 0.3), transparent 75%); filter: blur(3px); }
 .shooting-star--1 { --shoot-angle: -24deg; }
 .shooting-star--2 { --shoot-angle: -32deg; }
-.shooting-star--3 { --shoot-angle: -18deg; width: 130px; }
+.shooting-star--3 { --shoot-angle: -18deg; width: 160px; }
 @media (prefers-reduced-motion: no-preference) {
-  .shooting-star { animation: shoot 6.5s ease-in infinite; }
+  .shooting-star { animation: shoot 6.5s cubic-bezier(0.2, 0.7, 0.3, 1) infinite; }
 }
 @keyframes shoot {
-  0% { opacity: 0; transform: translate(0, 0) rotate(var(--shoot-angle, -24deg)); }
-  4% { opacity: 1; }
-  18% { opacity: 0; transform: translate(var(--shoot-x, 240px), var(--shoot-y, 110px)) rotate(var(--shoot-angle, -24deg)); }
+  0% { opacity: 0; transform: translate(0, 0) rotate(var(--shoot-angle, -24deg)) scaleX(0.3); }
+  2% { opacity: 1; transform: translate(0, 0) rotate(var(--shoot-angle, -24deg)) scaleX(0.5); }
+  8% { transform: translate(calc(var(--shoot-x, 240px) * 0.55), calc(var(--shoot-y, 110px) * 0.55)) rotate(var(--shoot-angle, -24deg)) scaleX(1); }
+  13% { opacity: 0; transform: translate(var(--shoot-x, 240px), var(--shoot-y, 110px)) rotate(var(--shoot-angle, -24deg)) scaleX(0.7); }
   100% { opacity: 0; }
 }
 
@@ -491,10 +503,29 @@ select:focus-visible {
 }
 @media (prefers-reduced-motion: no-preference) {
   /* .orbit-spin carries the planet around the sun; this spins the sprite the opposite way
-     at the same rate so it stays upright instead of tumbling once per orbit. */
+     at the same rate so it stays upright instead of tumbling once per orbit. rotate/scale are
+     standalone transform properties, so they compose with the transform below instead of fighting it. */
   .planet-sprite { animation: orbit-counter-spin var(--dur, 20s) linear infinite; animation-delay: var(--delay, 0s); }
+  /* axial spin, independent of the orbit — every planet turns on its own axis at its own rate */
+  .planet-sprite:not(.planet-sprite--saturn) {
+    animation: orbit-counter-spin var(--dur, 20s) linear infinite, planet-self-spin var(--spin, 10s) linear infinite;
+    animation-delay: var(--delay, 0s), 0s;
+  }
 }
 @keyframes orbit-counter-spin { to { rotate: -360deg; } }
+@keyframes planet-self-spin { to { transform: rotate(360deg); } }
+
+/* 태양 반대쪽 절반을 어둡게 — .planet-shadow는 .planet-sprite와 달리 역회전을 받지 않아서
+   .orbit-spin이 도는 그대로 따라 돌고, 그 결과 그림자는 항상 궤도 중심(태양)의 반대편을
+   가리키게 된다. */
+.planet-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent 0%, transparent 34%, rgba(2, 3, 10, 0.32) 68%, rgba(2, 3, 10, 0.7) 100%);
+  pointer-events: none;
+}
+.planet-shadow--saturn { border-radius: 0; background: linear-gradient(90deg, transparent 0%, transparent 30%, rgba(2, 3, 10, 0.22) 62%, rgba(2, 3, 10, 0.5) 100%); }
 .planet-anchor--saturn {
   width: 17%;
   aspect-ratio: 460 / 220;
