@@ -410,7 +410,96 @@ select:focus-visible {
   width: min(86vw, 430px);
   margin: 28px 0 4px;
 }
-.solar-system-canvas { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(0 18px 24px rgba(0, 10, 18, 0.34)); }
+.orbit-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+.orbit-sun-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 224, 150, 0.55), rgba(248, 184, 70, 0.22) 45%, transparent 72%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .orbit-sun-glow { animation: orbit-sun-pulse 6s ease-in-out infinite; }
+}
+@keyframes orbit-sun-pulse {
+  0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+}
+.orbit-sun {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 21%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 14px rgba(255, 214, 128, 0.65));
+}
+
+/* 태양 주위를 공전하는 행성들 - 레퍼런스 사진에서 잘라낸 실제 텍스처를 사용.
+   .orbit-ellipse가 scaleY로 전체를 납작하게 눌러서, 안쪽에서 도는 원형 회전이
+   화면에는 타원 궤도로 보인다 (행성 이미지 자체는 --orbit-squash의 역수로 다시
+   눌러서 찌그러지지 않게 되돌린다). */
+.orbit-ellipse {
+  --orbit-squash: 0.52;
+  position: absolute;
+  inset: 0;
+  transform: scaleY(var(--orbit-squash));
+}
+.solar-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--radius) * 2);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 162, 75, 0.32);
+  transform: translate(-50%, -50%);
+}
+.orbit-spin {
+  position: absolute;
+  inset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .orbit-spin { animation: spin-cw var(--dur, 20s) linear infinite; animation-delay: var(--delay, 0s); }
+}
+.planet-anchor {
+  position: absolute;
+  left: calc(50% + var(--radius, 20%));
+  top: 50%;
+  width: var(--size, 7%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+.planet-sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  scale: 1 1.923; /* 1 / 0.52 — cancels .orbit-ellipse's squash so the sprite itself stays round */
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* .orbit-spin carries the planet around the sun; this spins the sprite the opposite way
+     at the same rate so it stays upright instead of tumbling once per orbit. */
+  .planet-sprite { animation: orbit-counter-spin var(--dur, 20s) linear infinite; animation-delay: var(--delay, 0s); }
+}
+@keyframes orbit-counter-spin { to { rotate: -360deg; } }
+.planet-anchor--saturn {
+  width: 17%;
+  aspect-ratio: 460 / 220;
+}
+.planet-sprite--saturn { border-radius: 0; }
 .orbit-ring { fill: none; stroke: rgba(201, 162, 75, 0.4); }
 .orbit-ring--a { stroke-width: 1.2; stroke-dasharray: 1.5 5; transform: rotate(-10deg); transform-origin: 160px 160px; }
 .orbit-ring--b { stroke-width: 1.2; stroke-dasharray: 1.5 5; transform: rotate(8deg); transform-origin: 160px 160px; opacity: 0.7; }
