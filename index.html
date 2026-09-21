@@ -278,6 +278,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <stop offset="0%" stop-color="#c9def0"></stop>
                 <stop offset="100%" stop-color="#2f5478"></stop>
               </radialGradient>
+              <radialGradient id="planet-atmosphere" cx="30%" cy="24%" r="76%">
+                <stop offset="0%" stop-color="#e7fff0" stop-opacity="0.75"></stop>
+                <stop offset="42%" stop-color="#74c8c2" stop-opacity="0.22"></stop>
+                <stop offset="82%" stop-color="#315e75" stop-opacity="0.08"></stop>
+                <stop offset="100%" stop-color="#b7ebdf" stop-opacity="0"></stop>
+              </radialGradient>
             </defs>
 
             <ellipse class="orbit-ring orbit-ring--a" cx="160" cy="160" rx="150" ry="80"></ellipse>
@@ -299,7 +305,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <circle class="planet" data-element="wood" cx="160" cy="48" r="9" fill="url(#planet-wood)"></circle>
               <circle class="planet" data-element="fire" cx="267" cy="125" r="8" fill="url(#planet-fire)"></circle>
               <g class="planet-ringed" transform="translate(226,251)">
+                <ellipse rx="18" ry="6" class="planet-rings planet-rings--glow" data-element="earth"></ellipse>
                 <ellipse rx="15" ry="5" class="planet-rings" data-element="earth"></ellipse>
+                <circle r="12" fill="url(#planet-atmosphere)" class="planet-atmosphere"></circle>
                 <circle r="9" fill="url(#planet-earth)"></circle>
               </g>
               <circle class="planet" data-element="metal" cx="94" cy="251" r="7" fill="url(#planet-metal)"></circle>

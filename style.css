@@ -260,9 +260,14 @@ select:focus-visible {
   left: -60px;
   width: 320px;
   height: 320px;
-  opacity: 0.55;
+  opacity: 0.38;
   filter: blur(0.5px);
 }
+.galaxy ellipse { fill: url(#galaxy-grad); }
+.galaxy stop:first-child { stop-color: #b7e8e3; }
+.galaxy stop:nth-child(2) { stop-color: #4a8f9f; }
+.galaxy stop:last-child { stop-color: #1b465c; }
+.galaxy circle { fill: #e8fff4; }
 @media (prefers-reduced-motion: no-preference) {
   .galaxy { animation: spin-cw 140s linear infinite; transform-origin: 150px 150px; }
 }
@@ -293,11 +298,12 @@ select:focus-visible {
   100% { opacity: 0; }
 }
 
-.constellation { position: absolute; width: 240px; opacity: 0.18; display: none; }
+.constellation { position: absolute; z-index: 1; width: clamp(170px, 19vw, 280px); opacity: 0.7; display: block; filter: drop-shadow(0 0 8px rgba(158, 227, 224, 0.22)); }
 .constellation--left { top: 6%; left: 1%; }
 .constellation--right { top: 3%; right: 1%; }
-.constellation-lines line { stroke: #cdd3f5; stroke-width: 0.9; opacity: 0.65; }
-.constellation-stars circle { fill: #fff; filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.8)); }
+.constellation-lines line { stroke: #b7dddf; stroke-width: 1.15; opacity: 0.7; stroke-dasharray: 1 2; }
+.constellation-stars circle { fill: #effff8; filter: drop-shadow(0 0 3px rgba(219, 255, 245, 0.95)); }
+.constellation-stars circle:nth-child(2) { r: 3.2; fill: #f4d28d; }
 
 /* 사신(四神) 배경 장식 문자 — 정보가 아니라 순수 무드 장식이라 언어 설정과 무관하게 항상 보인다 */
 .myth-glyph {
@@ -311,7 +317,7 @@ select:focus-visible {
   pointer-events: none;
   user-select: none;
 }
-.hero-sky .myth-glyph, .hero-sky .zodiac-wheel { display: none; }
+.hero-sky .myth-glyph { display: none; }
 .myth-glyph--dragon { top: 10%; left: 6%; color: var(--el-wood); }
 .myth-glyph--tiger { top: 6%; right: 9%; color: var(--text); }
 .myth-glyph--phoenix { top: 46%; right: 3%; color: var(--el-fire); }
@@ -324,7 +330,7 @@ select:focus-visible {
   right: -90px;
   width: 380px;
   height: 380px;
-  opacity: 0.18;
+  opacity: 0.38;
 }
 @media (prefers-reduced-motion: no-preference) {
   .zodiac-wheel { animation: spin-cw 200s linear infinite; transform-origin: 150px 150px; }
@@ -337,7 +343,7 @@ select:focus-visible {
   font-family: var(--font-hanja);
   font-size: 15px;
   font-weight: 700;
-  fill: var(--accent-strong);
+  fill: #d6eee2;
   text-anchor: middle;
   opacity: 0.85;
 }
@@ -412,6 +418,7 @@ select:focus-visible {
 .astrolabe-tick { stroke: rgba(255, 255, 255, 0.18); stroke-width: 1.4; }
 .astrolabe-tick--major { stroke: var(--accent); stroke-width: 1.8; opacity: 0.7; }
 
+.astrolabe { filter: drop-shadow(0 18px 24px rgba(0, 10, 18, 0.34)); }
 .sun-core { filter: drop-shadow(0 0 13px rgba(255, 224, 150, 0.95)); }
 .astrolabe-core { fill: none; stroke: #fff6da; stroke-width: 1.4; opacity: 0.7; }
 .sun-glow { fill: rgba(var(--glow-tint), 0.55); filter: blur(10px); }
@@ -421,7 +428,9 @@ select:focus-visible {
 .solar-arc--b { stroke: rgba(123, 168, 209, 0.44); stroke-dasharray: 1 6; }
 
 .planet { stroke: rgba(0, 0, 0, 0.3); stroke-width: 0.5; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); }
-.planet-rings { fill: none; stroke: var(--el-earth); stroke-width: 1.4; opacity: 0.8; }
+.planet-rings { fill: none; stroke: #d3d9b4; stroke-width: 1.4; opacity: 0.86; }
+.planet-rings--glow { stroke: #78c7c5; stroke-width: 4; opacity: 0.22; filter: blur(2px); }
+.planet-atmosphere { opacity: 0.55; mix-blend-mode: screen; }
 .planet-ringed circle { stroke: rgba(0, 0, 0, 0.3); stroke-width: 0.5; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)); }
 
 @media (prefers-reduced-motion: no-preference) {
