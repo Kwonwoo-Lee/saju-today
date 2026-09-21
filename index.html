@@ -248,8 +248,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <defs>
               <radialGradient id="sun-grad" cx="38%" cy="35%" r="65%">
                 <stop offset="0%" stop-color="#fff6da"></stop>
-                <stop offset="45%" stop-color="#f0c369"></stop>
-                <stop offset="100%" stop-color="#a9772c"></stop>
+                <stop offset="34%" stop-color="#ffe7a1"></stop>
+                <stop offset="68%" stop-color="#e7a94e"></stop>
+                <stop offset="100%" stop-color="#825020"></stop>
+              </radialGradient>
+              <radialGradient id="sun-corona" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff5c9" stop-opacity="0.95"></stop>
+                <stop offset="44%" stop-color="#f4bd59" stop-opacity="0.34"></stop>
+                <stop offset="100%" stop-color="#b8792c" stop-opacity="0"></stop>
               </radialGradient>
               <radialGradient id="planet-wood" cx="35%" cy="30%" r="70%">
                 <stop offset="0%" stop-color="#c9f0cf"></stop>
@@ -280,10 +286,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <g class="astrolabe-ticks" id="astrolabe-ticks"></g>
             </g>
 
-            <circle class="sun-glow sun-glow--wide" cx="160" cy="160" r="60"></circle>
-            <circle class="sun-glow" cx="160" cy="160" r="38"></circle>
+            <circle class="sun-glow sun-glow--wide" cx="160" cy="160" r="68"></circle>
+            <circle class="sun-corona" cx="160" cy="160" r="54" fill="url(#sun-corona)"></circle>
+            <circle class="sun-glow" cx="160" cy="160" r="42"></circle>
             <circle class="sun-core" cx="160" cy="160" r="27" fill="url(#sun-grad)"></circle>
             <circle class="astrolabe-core" cx="160" cy="160" r="27"></circle>
+            <path class="solar-arc solar-arc--a" d="M103 160a57 57 0 0 1 114 0"></path>
+            <path class="solar-arc solar-arc--b" d="M117 191a48 48 0 0 0 86 0"></path>
 
             <g class="astrolabe-spin astrolabe-spin--rev">
               <circle class="planet" data-element="wood" cx="160" cy="48" r="9" fill="url(#planet-wood)"></circle>

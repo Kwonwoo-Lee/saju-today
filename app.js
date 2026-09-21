@@ -1022,6 +1022,22 @@ function buildHoroscopeCardPayload(lang) {
 
 const SHARE_CARD_BUILDERS = { horoscope: buildHoroscopeCardPayload, today: buildTodayCardPayload, year: buildYearCardPayload, compat: buildCompatCardPayload };
 
+function randomizeShootingStar(star) {
+  const angle = -16 - Math.random() * 28;
+  star.style.left = `${4 + Math.random() * 88}%`;
+  star.style.top = `${8 + Math.random() * 72}%`;
+  star.style.setProperty("--shoot-angle", `${angle}deg`);
+  star.style.setProperty("--shoot-x", `${150 + Math.random() * 220}px`);
+  star.style.setProperty("--shoot-y", `${55 + Math.random() * 135}px`);
+  star.style.animationDuration = `${7 + Math.random() * 8}s`;
+}
+
+document.querySelectorAll(".shooting-star").forEach((star, index) => {
+  randomizeShootingStar(star);
+  star.style.animationDelay = `${index * 2.3 + Math.random() * 2}s`;
+  star.addEventListener("animationiteration", () => randomizeShootingStar(star));
+});
+
 document.querySelectorAll(".share-card-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const type = btn.dataset.shareType;
