@@ -415,8 +415,8 @@ const COMPAT_TEN_GOD_INFO = {
 // ---------- 정적 UI 문자열 ----------
 const STRINGS = {
   en: {
-    pageTitle: "Saju Today — Your Four Pillars, Today",
-    metaDescription: "Enter your name, birth date and time, and we'll calculate your real Four Pillars (BaZi) chart and read today's fortune against it.",
+    pageTitle: "Saju Today — Free Saju, BaZi & Horoscope Calculator",
+    metaDescription: "Enter your name, birth date and time for a free Saju (BaZi) and horoscope reading, plus today's fortune, this year's outlook, and compatibility insights.",
     brand: "Saju Today", brandSub: "Four Pillars",
     heroTitleLine1: "Your daily horoscope,", heroTitleLine2: "written in the stars.",
     heroEyebrowSeo: "Free Horoscope & Saju Reading",
