@@ -493,7 +493,7 @@ const STRINGS = {
   },
   zh: {
     pageTitle: "今日八字 — 你的四柱与今日运势",
-    metaDescription: "输入姓名、出生日期与时间，我们会推算出真实的八字（四柱）命盘，并解读今日运势。",
+    metaDescription: "输入生日查看星座运势，并填写出生日期与时间，获取真实八字（四柱）命盘、今日运势和综合解读。",
     brand: "今日八字", brandSub: "四柱",
     heroTitleLine1: "你的今日星座运势，", heroTitleLine2: "从生日开始了解自己。",
     heroEyebrowSeo: "免费星座与八字运势",
@@ -570,7 +570,7 @@ const STRINGS = {
   },
   fr: {
     pageTitle: "Saju du Jour — Vos Quatre Piliers, Aujourd'hui",
-    metaDescription: "Entrez votre nom, votre date et heure de naissance : nous calculons votre véritable thème des Quatre Piliers (BaZi) et lisons la fortune du jour.",
+    metaDescription: "Entrez votre date de naissance pour votre horoscope, puis votre date et heure de naissance pour un thème BaZi (Quatre Piliers) et une lecture complète de votre fortune.",
     brand: "Saju du Jour", brandSub: "Quatre Piliers",
     heroTitleLine1: "Votre horoscope du jour,", heroTitleLine2: "à partir de votre anniversaire.",
     heroEyebrowSeo: "Horoscope & Saju gratuits",
