@@ -863,6 +863,9 @@ function renderHoroscope(lang, result) {
   const score = 60 + ((result.index * 7 + result.day) % 36);
   document.getElementById("horoscope-result-date").textContent = new Date().toLocaleDateString(LOCALE_CODE[lang], { year: "numeric", month: "long", day: "numeric", weekday: "long" });
   document.getElementById("horoscope-symbol").textContent = ZODIAC_SYMBOLS[result.index];
+  const zodiacArt = document.getElementById("horoscope-art");
+  zodiacArt.dataset.signIndex = result.index;
+  zodiacArt.setAttribute("aria-label", `${sign} zodiac illustration`);
   document.getElementById("horoscope-sign").textContent = `${sign} · ${score}/100`;
   document.getElementById("horoscope-range").textContent = s.horoscopeRanges[result.index];
   document.getElementById("horoscope-headline").textContent = reading.headline;
@@ -1010,7 +1013,7 @@ function buildHoroscopeCardPayload(lang) {
   const reading = s.horoscopeReadings[result.element];
   return {
     type: "horoscope", lang, brand: s.brand, footerUrl: "saju.tradesmrt.com", footerCta: s.shareCardFooterCta,
-    linkUrl: buildShareUrl("horoscope"), name: result.name, sign: s.horoscopeSigns[result.index],
+    linkUrl: buildShareUrl("horoscope"), name: result.name, sign: s.horoscopeSigns[result.index], signIndex: result.index,
     range: s.horoscopeRanges[result.index], symbol: ZODIAC_SYMBOLS[result.index],
     headline: reading.headline, body: reading.body,
     luckyLine: `${s.horoscopeLuckyLabel}: ${s.horoscopeLuckyColors[result.element]}`,

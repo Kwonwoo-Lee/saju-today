@@ -520,16 +520,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button type="button" class="pill-toggle-btn" data-tab="compat" id="tab-compat-btn" role="tab" aria-selected="false">인연 및 궁합</button>
       </div>
 
-      <div class="result-block" id="block-horoscope" role="tabpanel">
+      <div class="result-block result-block--horoscope" id="block-horoscope" role="tabpanel">
         <h2 class="result-title" id="horoscope-result-title">오늘의 별자리 운세</h2>
         <p class="today-date" id="horoscope-result-date"></p>
         <div class="horoscope-hero-result">
-          <div class="horoscope-symbol" id="horoscope-symbol" aria-hidden="true"></div>
+          <div class="zodiac-art" id="horoscope-art" role="img" aria-label="Zodiac sign illustration">
+            <span class="zodiac-art-glow" aria-hidden="true"></span>
+            <span class="zodiac-orbit zodiac-orbit--outer" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="zodiac-orbit zodiac-orbit--inner" aria-hidden="true"><i></i><i></i></span>
+            <span class="horoscope-symbol" id="horoscope-symbol" aria-hidden="true"></span>
+          </div>
           <div><p class="horoscope-sign" id="horoscope-sign"></p><p class="horoscope-range" id="horoscope-range"></p></div>
         </div>
         <div class="fortune-summary"><p id="horoscope-headline"></p><p id="horoscope-body"></p></div>
         <div class="fortune-grid" id="horoscope-grid"></div>
         <div class="lucky-row" id="horoscope-lucky-row"></div>
+        <button type="button" class="share-card-btn" id="share-horoscope-card-btn" data-share-type="horoscope">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v13m0 0l-4.5-4.5M12 16l4.5-4.5M4 20h16"></path></svg>
+          <span id="share-horoscope-label">Instagram share</span>
+        </button>
         <div class="result-share-actions">
           <button type="button" class="share-story-btn" data-share-type="horoscope" id="share-horoscope-btn">Share to Instagram Story</button>
           <button type="button" class="copy-share-link-btn" data-share-type="horoscope" id="copy-horoscope-link-btn">Copy share link</button>

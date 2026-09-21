@@ -191,6 +191,30 @@ function shareCardDrawGlyphBadge(ctx, cx, cy, radius, glyph, element, lang, font
   ctx.textBaseline = "alphabetic";
 }
 
+const SHARE_CARD_ZODIAC_POINTS = [
+  [[-0.72, -0.16], [-0.28, -0.54], [0.14, -0.28], [0.6, -0.5], [0.76, 0.14], [0.3, 0.48], [-0.1, 0.24], [-0.58, 0.54]],
+  [[-0.68, -0.48], [-0.2, -0.2], [0.26, -0.56], [0.7, -0.18], [0.48, 0.44], [-0.12, 0.6], [-0.66, 0.28]],
+  [[-0.72, 0.22], [-0.34, -0.46], [0.08, -0.08], [0.48, -0.52], [0.72, 0.22], [0.2, 0.54], [-0.3, 0.38]],
+];
+
+function shareCardDrawZodiacConstellation(ctx, cx, cy, radius, signIndex) {
+  const points = SHARE_CARD_ZODIAC_POINTS[signIndex % SHARE_CARD_ZODIAC_POINTS.length];
+  const coords = points.map(([x, y]) => [cx + x * radius, cy + y * radius]);
+  ctx.save();
+  ctx.strokeStyle = "rgba(236, 201, 120, 0.38)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  coords.forEach(([x, y], i) => { if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+  ctx.stroke();
+  coords.forEach(([x, y], i) => {
+    ctx.fillStyle = i % 3 === 0 ? SHARE_CARD_ACCENT_STRONG : "#f2efe6";
+    ctx.shadowColor = SHARE_CARD_ACCENT_STRONG;
+    ctx.shadowBlur = i % 3 === 0 ? 16 : 7;
+    ctx.beginPath(); ctx.arc(x, y, i % 3 === 0 ? 6 : 4, 0, Math.PI * 2); ctx.fill();
+  });
+  ctx.restore();
+}
+
 function shareCardDrawToday(ctx, d, h) {
   ctx.textAlign = "left";
   ctx.fillStyle = SHARE_CARD_MUTED;
@@ -229,6 +253,7 @@ function shareCardDrawHoroscope(ctx, d, h) {
   ctx.fillStyle = SHARE_CARD_INK;
   ctx.font = `800 46px ${SHARE_CARD_FONT_UI}`;
   ctx.fillText(d.name, 76, 248);
+  shareCardDrawZodiacConstellation(ctx, SHARE_CARD_W / 2, 420, 150, d.signIndex || 0);
   shareCardDrawGlyphBadge(ctx, SHARE_CARD_W / 2, 420, 118, d.symbol, "fire", d.lang, 74);
   ctx.textAlign = "center";
   ctx.fillStyle = SHARE_CARD_ACCENT_STRONG;
