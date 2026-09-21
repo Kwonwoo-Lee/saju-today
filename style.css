@@ -407,9 +407,10 @@ select:focus-visible {
 }
 
 .hero-orbit {
-  width: min(72vw, 340px);
+  width: min(86vw, 430px);
   margin: 28px 0 4px;
 }
+.solar-system-canvas { display: block; width: 100%; aspect-ratio: 1; filter: drop-shadow(0 18px 24px rgba(0, 10, 18, 0.34)); }
 .orbit-ring { fill: none; stroke: rgba(201, 162, 75, 0.4); }
 .orbit-ring--a { stroke-width: 1.2; stroke-dasharray: 1.5 5; transform: rotate(-10deg); transform-origin: 160px 160px; }
 .orbit-ring--b { stroke-width: 1.2; stroke-dasharray: 1.5 5; transform: rotate(8deg); transform-origin: 160px 160px; opacity: 0.7; }
@@ -999,7 +1000,7 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 /* ---------- responsive ---------- */
 @media (max-width: 980px) {
   .hero-grid { grid-template-columns: 1fr; }
-  .hero-orbit { width: min(80vw, 300px); margin: 20px auto; }
+  .hero-orbit { width: min(86vw, 430px); margin: 20px auto; }
   .hero-copy { text-align: left; }
   .hero-cards { grid-template-columns: repeat(2, 1fr); }
   .results-top { grid-template-columns: 1fr; }

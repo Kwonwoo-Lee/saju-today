@@ -1022,6 +1022,155 @@ function buildHoroscopeCardPayload(lang) {
 
 const SHARE_CARD_BUILDERS = { horoscope: buildHoroscopeCardPayload, today: buildTodayCardPayload, year: buildYearCardPayload, compat: buildCompatCardPayload };
 
+function initSolarSystemCanvas() {
+  const canvas = document.getElementById("solar-system-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const stars = [];
+  let width = 0;
+  let height = 0;
+  let frameId = 0;
+  let startTime = performance.now();
+
+  let seed = 24817;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  for (let i = 0; i < 115; i += 1) {
+    stars.push({ x: random(), y: random(), radius: 0.35 + random() * 1.35, alpha: 0.2 + random() * 0.7, phase: random() * Math.PI * 2 });
+  }
+
+  const planets = [
+    { name: "mercury", rx: 0.14, ry: 0.075, speed: 0.00042, phase: 0.4, radius: 0.018, colors: ["#e8d4b1", "#665b55"] },
+    { name: "venus", rx: 0.2, ry: 0.105, speed: 0.00032, phase: 2.4, radius: 0.026, colors: ["#f8d99c", "#91633b"] },
+    { name: "earth", rx: 0.27, ry: 0.14, speed: 0.00024, phase: 4.2, radius: 0.038, colors: ["#b4e4e7", "#1e527c"] },
+    { name: "mars", rx: 0.34, ry: 0.175, speed: 0.00018, phase: 1.2, radius: 0.03, colors: ["#efb18e", "#713727"] },
+    { name: "jupiter", rx: 0.43, ry: 0.22, speed: 0.000105, phase: 5.1, radius: 0.076, colors: ["#fff0c8", "#8e5c3e"] },
+    { name: "saturn", rx: 0.52, ry: 0.27, speed: 0.000075, phase: 3.1, radius: 0.066, colors: ["#f1d99d", "#856342"] },
+    { name: "uranus", rx: 0.6, ry: 0.31, speed: 0.000052, phase: 0.9, radius: 0.041, colors: ["#ccf4ed", "#377d8d"] },
+    { name: "neptune", rx: 0.68, ry: 0.35, speed: 0.00004, phase: 4.7, radius: 0.039, colors: ["#95c7ff", "#274a9a"] },
+  ];
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    width = Math.max(1, rect.width);
+    height = Math.max(1, rect.height);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawStarfield(time, cx, cy, radius) {
+    stars.forEach((star) => {
+      const twinkle = 0.72 + Math.sin(time * 0.0012 + star.phase) * 0.28;
+      ctx.globalAlpha = star.alpha * twinkle;
+      ctx.fillStyle = star.radius > 1.1 ? "#f6ffff" : "#a8d9ee";
+      ctx.beginPath();
+      ctx.arc(cx - radius + star.x * radius * 2, cy - radius + star.y * radius * 2, star.radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function drawOrbit(cx, cy, rx, ry, alpha) {
+    ctx.strokeStyle = `rgba(177, 219, 226, ${alpha})`;
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, -0.11, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  function drawPlanet(planet, x, y, radius, time) {
+    const gradient = ctx.createRadialGradient(x - radius * 0.35, y - radius * 0.4, radius * 0.08, x, y, radius * 1.1);
+    gradient.addColorStop(0, planet.colors[0]);
+    gradient.addColorStop(0.48, planet.colors[0]);
+    gradient.addColorStop(1, planet.colors[1]);
+
+    ctx.save();
+    ctx.shadowColor = planet.name === "earth" || planet.name === "uranus" ? "rgba(132, 231, 228, 0.65)" : "rgba(0, 0, 0, 0.55)";
+    ctx.shadowBlur = radius * 0.55;
+    if (planet.name === "saturn") {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-0.2);
+      ctx.strokeStyle = "rgba(196, 225, 211, 0.4)";
+      ctx.lineWidth = radius * 0.28;
+      ctx.beginPath(); ctx.ellipse(0, 0, radius * 2.05, radius * 0.52, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(239, 207, 145, 0.88)";
+      ctx.lineWidth = radius * 0.08;
+      ctx.beginPath(); ctx.ellipse(0, 0, radius * 1.74, radius * 0.43, 0, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.fillStyle = gradient;
+    ctx.beginPath(); ctx.arc(x, y, radius, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y, radius * 0.96, 0, Math.PI * 2); ctx.clip();
+    if (planet.name === "jupiter") {
+      for (let band = -2; band <= 2; band += 1) {
+        ctx.fillStyle = band % 2 ? "rgba(111, 67, 48, 0.28)" : "rgba(255, 245, 204, 0.3)";
+        ctx.fillRect(x - radius, y + band * radius * 0.27, radius * 2, radius * 0.11);
+      }
+      ctx.fillStyle = "rgba(168, 76, 49, 0.72)";
+      ctx.beginPath(); ctx.ellipse(x + radius * 0.3, y + radius * 0.25, radius * 0.23, radius * 0.11, -0.15, 0, Math.PI * 2); ctx.fill();
+    } else if (planet.name === "earth") {
+      ctx.fillStyle = "rgba(132, 200, 111, 0.85)";
+      ctx.beginPath(); ctx.ellipse(x - radius * 0.2, y - radius * 0.05, radius * 0.3, radius * 0.16, -0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + radius * 0.28, y + radius * 0.22, radius * 0.22, radius * 0.12, 0.35, 0, Math.PI * 2); ctx.fill();
+    } else if (planet.name === "saturn" || planet.name === "uranus") {
+      ctx.strokeStyle = "rgba(255, 244, 202, 0.28)";
+      ctx.lineWidth = radius * 0.13;
+      ctx.beginPath(); ctx.arc(x, y - radius * 0.06, radius * 0.72, 0.1, Math.PI - 0.1); ctx.stroke();
+    }
+    ctx.restore();
+    if (planet.name === "saturn") {
+      ctx.save(); ctx.translate(x, y); ctx.rotate(-0.2); ctx.strokeStyle = "rgba(245, 221, 169, 0.65)"; ctx.lineWidth = radius * 0.08;
+      ctx.beginPath(); ctx.ellipse(0, 0, radius * 1.82, radius * 0.45, 0, Math.PI * 0.08, Math.PI * 0.92); ctx.stroke(); ctx.restore();
+    }
+    ctx.restore();
+  }
+
+  function draw(time) {
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = Math.min(width, height) * 0.47;
+    ctx.clearRect(0, 0, width, height);
+    drawStarfield(time, cx, cy, radius);
+    planets.forEach((planet) => drawOrbit(cx, cy, radius * planet.rx, radius * planet.ry, 0.12));
+
+    const sunRadius = radius * 0.15;
+    const sunGlow = ctx.createRadialGradient(cx, cy, sunRadius * 0.25, cx, cy, sunRadius * 2.8);
+    sunGlow.addColorStop(0, "rgba(255, 245, 187, 0.92)");
+    sunGlow.addColorStop(0.3, "rgba(248, 184, 70, 0.44)");
+    sunGlow.addColorStop(1, "rgba(248, 184, 70, 0)");
+    ctx.fillStyle = sunGlow; ctx.beginPath(); ctx.arc(cx, cy, sunRadius * 2.8, 0, Math.PI * 2); ctx.fill();
+    const sun = ctx.createRadialGradient(cx - sunRadius * 0.35, cy - sunRadius * 0.4, sunRadius * 0.08, cx, cy, sunRadius);
+    sun.addColorStop(0, "#fff8db"); sun.addColorStop(0.45, "#ffd56d"); sun.addColorStop(1, "#a75d20");
+    ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(cx, cy, sunRadius, 0, Math.PI * 2); ctx.fill();
+
+    const elapsed = reducedMotion.matches ? 0 : time - startTime;
+    planets.slice().sort((a, b) => Math.sin(a.phase + elapsed * a.speed) - Math.sin(b.phase + elapsed * b.speed)).forEach((planet) => {
+      const angle = planet.phase + elapsed * planet.speed;
+      drawPlanet(planet, cx + Math.cos(angle) * radius * planet.rx, cy + Math.sin(angle) * radius * planet.ry, Math.max(2.5, radius * planet.radius), time);
+    });
+    if (!reducedMotion.matches) frameId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  new ResizeObserver(() => {
+    resize();
+    draw(performance.now());
+  }).observe(canvas);
+  reducedMotion.addEventListener?.("change", () => { startTime = performance.now(); if (reducedMotion.matches) cancelAnimationFrame(frameId); else frameId = requestAnimationFrame(draw); });
+  draw(performance.now());
+}
+
+initSolarSystemCanvas();
+
 function randomizeShootingStar(star) {
   const angle = -16 - Math.random() * 28;
   star.style.left = `${4 + Math.random() * 88}%`;
