@@ -163,6 +163,23 @@ select:focus-visible {
   pointer-events: none;
   overflow: hidden;
 }
+.hero-cosmos-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 1;
+  filter: saturate(1.08) contrast(1.06) brightness(1.08);
+}
+.hero-sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 44% 62% at 50% 38%, rgba(4, 7, 17, 0.22), transparent 72%), linear-gradient(180deg, rgba(3, 5, 13, 0.08), rgba(3, 5, 13, 0.22));
+  pointer-events: none;
+}
 .hero-stars {
   position: absolute;
   inset: -10%;
@@ -179,12 +196,12 @@ select:focus-visible {
     radial-gradient(1.4px 1.4px at 62% 5%, #fff, transparent),
     radial-gradient(1.2px 1.2px at 85% 92%, #fff, transparent);
   background-size: 480px 480px;
-  opacity: 0.55;
+  opacity: 0.18;
 }
 .hero-stars--b {
   background-size: 720px 720px;
   background-position: 120px 60px;
-  opacity: 0.4;
+  opacity: 0.14;
 }
 .hero-stars--c {
   background-image:
@@ -197,7 +214,7 @@ select:focus-visible {
     radial-gradient(2px 2px at 6% 70%, #fff, transparent);
   background-size: 900px 900px;
   background-position: 40px 200px;
-  opacity: 0.75;
+  opacity: 0.24;
 }
 @media (prefers-reduced-motion: no-preference) {
   .hero-stars--a { animation: twinkle 7s ease-in-out infinite; }
@@ -213,6 +230,7 @@ select:focus-visible {
   opacity: 0.55;
   mix-blend-mode: screen;
 }
+.hero-sky .nebula { display: none; }
 .nebula--blue {
   top: -160px;
   left: -220px;
@@ -275,7 +293,7 @@ select:focus-visible {
   100% { opacity: 0; }
 }
 
-.constellation { position: absolute; width: 240px; opacity: 0.55; }
+.constellation { position: absolute; width: 240px; opacity: 0.18; display: none; }
 .constellation--left { top: 6%; left: 1%; }
 .constellation--right { top: 3%; right: 1%; }
 .constellation-lines line { stroke: #cdd3f5; stroke-width: 0.9; opacity: 0.65; }
@@ -289,10 +307,11 @@ select:focus-visible {
   font-size: clamp(64px, 9vw, 116px);
   line-height: 1;
   color: var(--accent);
-  opacity: 0.1;
+  opacity: 0.055;
   pointer-events: none;
   user-select: none;
 }
+.hero-sky .myth-glyph, .hero-sky .zodiac-wheel { display: none; }
 .myth-glyph--dragon { top: 10%; left: 6%; color: var(--el-wood); }
 .myth-glyph--tiger { top: 6%; right: 9%; color: var(--text); }
 .myth-glyph--phoenix { top: 46%; right: 3%; color: var(--el-fire); }
@@ -305,7 +324,7 @@ select:focus-visible {
   right: -90px;
   width: 380px;
   height: 380px;
-  opacity: 0.5;
+  opacity: 0.18;
 }
 @media (prefers-reduced-motion: no-preference) {
   .zodiac-wheel { animation: spin-cw 200s linear infinite; transform-origin: 150px 150px; }
