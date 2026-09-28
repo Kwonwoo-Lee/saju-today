@@ -1083,5 +1083,28 @@ document.querySelectorAll(".share-story-btn").forEach((button) => {
   });
 });
 
+// ---------- 오늘의 글 (일일 아티클 티저) ----------
+// 아티클은 한국어로만 발행되므로, 한국어 페이지에서만 /articles/manifest.json의
+// 최신 항목을 가져와 카드로 보여준다. 실패하거나 항목이 없으면 조용히 숨긴 채로 둔다.
+async function initDailyArticleTeaser() {
+  if (currentLang !== "ko") return;
+  const section = document.getElementById("daily-article");
+  if (!section) return;
+  try {
+    const res = await fetch("/articles/manifest.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const manifest = await res.json();
+    const latest = Array.isArray(manifest) ? manifest[0] : null;
+    if (!latest || !latest.url || !latest.title) return;
+    document.getElementById("daily-article-link").href = latest.url;
+    document.getElementById("daily-article-title").textContent = latest.title;
+    document.getElementById("daily-article-excerpt").textContent = latest.excerpt || "";
+    section.hidden = false;
+  } catch (e) {
+    /* 아티클 없이도 사이트 나머지 기능에는 영향 없게 조용히 무시 */
+  }
+}
+
 // ---------- 초기화 ----------
 setLang(getPageLang());
+initDailyArticleTeaser();

@@ -1037,6 +1037,24 @@ input::placeholder { color: var(--text-muted); opacity: 0.7; }
 .compat-score-kicker { margin: 0; font-size: 0.82rem; color: var(--text-muted); }
 .compat-score-relation { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--accent-strong); }
 
+/* ---------- 오늘의 글 (일일 SEO 아티클 티저) ---------- */
+.daily-article { padding: 8px 0 40px; position: relative; z-index: 1; }
+.daily-article-card {
+  display: block;
+  border: 1px solid rgba(201, 162, 75, 0.35);
+  border-radius: var(--radius-lg);
+  padding: 28px 30px;
+  background: linear-gradient(160deg, rgba(201, 162, 75, 0.14), rgba(20, 23, 43, 0.6) 70%), var(--bg-elevated);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.daily-article-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.daily-article-eyebrow { margin: 0 0 6px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em; color: var(--accent-strong); }
+.daily-article-title { margin: 0 0 8px; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+.daily-article-excerpt { margin: 0 0 12px; font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; max-width: 68ch; }
+.daily-article-cta { font-size: 0.85rem; font-weight: 600; color: var(--accent-strong); }
+
 /* ---------- about / FAQ (SEO 콘텐츠) ---------- */
 .about-seo { padding: 64px 0; border-top: 1px solid var(--border); position: relative; z-index: 1; }
 .about-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 12px; }

@@ -1,0 +1,125 @@
+// scripts/generate-articles-index.js
+//
+// articles/manifest.json이 유일한 원본입니다. 이 스크립트는 그 배열을 읽어서
+// articles/index.html(아카이브 목록 페이지)을 다시 생성합니다.
+//
+// 실행: node scripts/generate-articles-index.js
+// (manifest.json에 새 글을 추가한 뒤에는 반드시 다시 실행해야 목록 페이지가 갱신됩니다.)
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "..");
+const MANIFEST_PATH = path.join(ROOT, "articles", "manifest.json");
+const OUT_PATH = path.join(ROOT, "articles", "index.html");
+
+const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+if (!Array.isArray(manifest)) throw new Error("articles/manifest.json은 배열이어야 합니다.");
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+const items = manifest
+  .map(
+    (a) => `        <div class="faq-item">
+          <p class="legal-updated" style="margin-bottom:6px;">${escapeHtml(a.date)}</p>
+          <h3><a href="${escapeHtml(a.url)}">${escapeHtml(a.title)}</a></h3>
+          <p>${escapeHtml(a.excerpt || "")}</p>
+        </div>`
+  )
+  .join("\n");
+
+const html = `<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3QH442VS1C"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3QH442VS1C');
+</script>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-WJVS8HPK');</script>
+<!-- End Google Tag Manager -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 글 — 별자리 &amp; 사주 이야기 아카이브 - 사주 오늘</title>
+<meta name="description" content="사주 오늘이 매일 발행하는 별자리·사주 운세 글 모음입니다. 오늘 운이 좋은 별자리, 이달의 흐름 같은 이야기를 매일 확인하세요.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://saju.tradesmrt.com/articles/">
+<meta name="theme-color" content="#06070f">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔮</text></svg>">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WJVS8HPK"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="wrap site-header-row">
+    <a href="/ko/" class="brand-lockup" aria-label="사주 오늘">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="brand-mark-ring"></circle><circle cx="20" cy="20" r="10" class="brand-mark-ring brand-mark-ring--in"></circle><circle cx="20" cy="20" r="3" class="brand-mark-core"></circle><line x1="20" y1="1" x2="20" y2="5" class="brand-mark-tick"></line><line x1="20" y1="35" x2="20" y2="39" class="brand-mark-tick"></line><line x1="1" y1="20" x2="5" y2="20" class="brand-mark-tick"></line><line x1="35" y1="20" x2="39" y2="20" class="brand-mark-tick"></line></svg>
+      </span>
+      <span class="brand">사주 오늘</span>
+      <span class="brand-sub">오늘의 네 기둥</span>
+    </a>
+  </div>
+</header>
+
+<main class="legal-main">
+  <div class="wrap">
+    <a href="/ko/" class="legal-back">← 사주 오늘로 돌아가기</a>
+    <h1>오늘의 글</h1>
+    <p class="legal-updated">별자리와 사주 이야기를 매일 새로 씁니다. 지나간 글도 모두 여기서 다시 볼 수 있어요.</p>
+
+    <div class="faq-list" id="article-list" style="grid-template-columns: 1fr; margin-top: 32px;">
+${items}
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-row">
+      <div class="footer-brand">
+        <p class="footer-brand-name">사주 오늘</p>
+        <p class="footer-url">saju.tradesmrt.com</p>
+      </div>
+      <div class="footer-right">
+        <nav class="footer-nav" aria-label="Footer">
+          <a href="/ko/">홈</a>
+          <a href="/articles/">오늘의 글</a>
+          <a href="/privacy">개인정보처리방침</a>
+          <a href="/terms">이용약관</a>
+          <a href="mailto:kwonwoo4056@gmail.com">문의</a>
+        </nav>
+        <p class="footer-copyright">© 2026 사주 오늘. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
+`;
+
+fs.writeFileSync(OUT_PATH, html, "utf8");
+console.log(`generated articles/index.html (${manifest.length} articles)`);
