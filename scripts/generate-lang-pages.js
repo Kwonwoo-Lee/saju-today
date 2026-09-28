@@ -43,6 +43,7 @@ const TEXT_FIELDS = [
   ["brand-name", "brand"], ["brand-sub", "brandSub"],
   ["hero-title-1", "heroTitleLine1"], ["hero-title-2", "heroTitleLine2"],
   ["hero-eyebrow", "heroEyebrowSeo"], ["hero-form-title", "heroFormTitle"],
+  ["daily-article-eyebrow", "dailyArticleEyebrow"], ["daily-article-cta", "dailyArticleCta"],
   ["feature-horoscope-title", "featureHoroscopeTitle"], ["feature-horoscope-body", "featureHoroscopeBody"],
   ["horoscope-form-title", "horoscopeFormTitle"], ["horoscope-form-back-label", "formBack"],
   ["label-horoscope-name", "labelHoroscopeName"], ["label-horoscope-date", "labelHoroscopeDate"],

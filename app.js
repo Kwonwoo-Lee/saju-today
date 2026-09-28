@@ -1084,17 +1084,17 @@ document.querySelectorAll(".share-story-btn").forEach((button) => {
 });
 
 // ---------- 오늘의 글 (일일 아티클 티저) ----------
-// 아티클은 한국어로만 발행되므로, 한국어 페이지에서만 /articles/manifest.json의
-// 최신 항목을 가져와 카드로 보여준다. 실패하거나 항목이 없으면 조용히 숨긴 채로 둔다.
+// articles/latest.json은 언어별 최신 글 {url, title, excerpt}을 담고 있다
+// (scripts/build-articles.js가 만든다). 현재 언어에 해당 글이 없으면(아직
+// 그 언어로 번역이 안 됐으면) 조용히 숨긴 채로 둔다.
 async function initDailyArticleTeaser() {
-  if (currentLang !== "ko") return;
   const section = document.getElementById("daily-article");
   if (!section) return;
   try {
-    const res = await fetch("/articles/manifest.json", { cache: "no-store" });
+    const res = await fetch("/articles/latest.json", { cache: "no-store" });
     if (!res.ok) return;
-    const manifest = await res.json();
-    const latest = Array.isArray(manifest) ? manifest[0] : null;
+    const latestByLang = await res.json();
+    const latest = latestByLang && latestByLang[currentLang];
     if (!latest || !latest.url || !latest.title) return;
     document.getElementById("daily-article-link").href = latest.url;
     document.getElementById("daily-article-title").textContent = latest.title;
