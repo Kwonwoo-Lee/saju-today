@@ -59,6 +59,10 @@ body {
   line-height: 1.6;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
+  /* 한국어(및 CJK)는 기본값(break-all에 가까움)으로 두면 단어 중간이 끊겨 보여서,
+     띄어쓰기 단위로만 줄바꿈되게 한다. 라틴 문자에는 사실상 영향 없음. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .wrap {
