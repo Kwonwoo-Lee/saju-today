@@ -84,10 +84,13 @@ const TEXT_FIELDS = [
   ["faq-q3", "faqQ3"], ["faq-a3", "faqA3"],
   ["faq-q4", "faqQ4"], ["faq-a4", "faqA4"],
   ["faq-q5", "faqQ5"], ["faq-a5", "faqA5"],
+  ["faq-q6", "faqQ6"], ["faq-a6", "faqA6"],
+  ["faq-q7", "faqQ7"], ["faq-a7", "faqA7"],
 ];
 
 const ATTR_FIELDS = [
   ["meta-description", "content", "metaDescription"],
+  ["meta-keywords", "content", "metaKeywords"],
   ["og-title", "content", "pageTitle"],
   ["og-description", "content", "metaDescription"],
   ["twitter-title", "content", "pageTitle"],
